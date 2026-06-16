@@ -32,10 +32,10 @@
     <!-- Global Listeners                                                    -->
     <!-- ================================================================== -->
     <listeners>
-        <listener class-name="org.example.listeners.TestListener" />
-        <listener class-name="org.example.listeners.AllureListener" />
-        <listener class-name="org.example.listeners.RetryListener" />
-        <listener class-name="org.example.listeners.ExtentReporter" />
+        <listener class-name="main.listeners.TestListener" />
+        <listener class-name="main.listeners.AllureListener" />
+        <listener class-name="main.listeners.RetryListener" />
+        <listener class-name="main.listeners.ExtentReporter" />
     </listeners>
 
     <!-- ================================================================== -->
@@ -49,7 +49,7 @@
             </run>
         </groups>
         <packages>
-            <package name="org.example.test.tests.*" />
+            <package name="main.test.tests.*" />
         </packages>
     </test>
 
@@ -66,7 +66,7 @@
             </run>
         </groups>
         <packages>
-            <package name="org.example.test.tests.*" />
+            <package name="main.test.tests.*" />
         </packages>
     </test>
 
@@ -76,7 +76,7 @@
     <test name="Cross-Browser - Firefox" parallel="methods" thread-count="2">
         <parameter name="browser" value="FIREFOX" />
         <packages>
-            <package name="org.example.test.tests.*" />
+            <package name="main.test.tests.*" />
         </packages>
     </test>
 
@@ -86,7 +86,7 @@
     <test name="Cross-Browser - Edge" parallel="methods" thread-count="2">
         <parameter name="browser" value="EDGE" />
         <packages>
-            <package name="org.example.test.tests.*" />
+            <package name="main.test.tests.*" />
         </packages>
     </test>
 
@@ -101,7 +101,7 @@
             </run>
         </groups>
         <packages>
-            <package name="org.example.test.tests.*" />
+            <package name="main.test.tests.*" />
         </packages>
     </test>
 
