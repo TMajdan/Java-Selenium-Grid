@@ -1,0 +1,77 @@
+environments:
+  dev:
+    baseUrl: "https://dev.example.com"
+    apiBaseUrl: "https://api.dev.example.com"
+    dbConnection: "jdbc:postgresql://dev-db:5432/app"
+    adminUsername: "admin_dev"
+    adminPassword: "admin_dev_pass"
+
+  qa:
+    baseUrl: "https://www.saucedemo.com"
+    apiBaseUrl: "https://www.saucedemo.com/api"
+    dbConnection: "jdbc:postgresql://qa-db:5432/app"
+    adminUsername: "admin_qa"
+    adminPassword: "admin_qa_pass"
+
+  stage:
+    baseUrl: "https://stage.example.com"
+    apiBaseUrl: "https://api.stage.example.com"
+    dbConnection: "jdbc:postgresql://stage-db:5432/app"
+    adminUsername: "admin_stage"
+    adminPassword: "admin_stage_pass"
+
+  prod:
+    baseUrl: "https://prod.example.com"
+    apiBaseUrl: "https://api.prod.example.com"
+    dbConnection: "jdbc:postgresql://prod-db:5432/app"
+    adminUsername: "admin_prod"
+    adminPassword: "admin_prod_pass"
+
+execution:
+  mode: "LOCAL"
+  browser: "CHROME"
+  headless: false
+  timeout: 20
+  pageLoadTimeout: 30
+  implicitlyWait: 5
+  pollingInterval: 250
+  threadCount: 4
+  retryCount: 2
+  screenshotOnFailure: true
+  maxScreenshotHistory: 50
+
+grid:
+  hubUrl: "http://localhost:4444/wd/hub"
+  username: ""
+  password: ""
+  enableVnc: false
+  enableVideo: false
+
+remote:
+  enableProxy: false
+  proxyHost: ""
+  proxyPort: 0
+  proxyProtocol: "http"
+
+selenium:
+  maximizeWindow: true
+  incognitoMode: false
+  disableNotifications: true
+  disablePopups: true
+  disableExtensions: true
+  acceptInsecureCerts: false
+  pageLoadStrategy: "normal"
+  windowWidth: 1920
+  windowHeight: 1080
+
+paths:
+  downloadDir: "target/downloads"
+  screenshotDir: "target/screenshots"
+  logsDir: "target/logs"
+  allureResultsDir: "target/allure-results"
+  testDataDir: "src/test/resources/testdata"
+
+reporting:
+  allureEnabled: true
+  extentEnabled: false
+  extentReportPath: "target/extent-reports"
