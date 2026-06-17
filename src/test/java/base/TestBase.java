@@ -1,7 +1,6 @@
 package base;
 
 import lombok.extern.slf4j.Slf4j;
-import config.TestConfig;
 import static config.ConfigManager.CONFIG;
 import driver.DriverFactory;
 import driver.DriverManager;
@@ -30,51 +29,34 @@ public abstract class TestBase {
 
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite() {
-        log.info("================================================");
-        log.info("TEST SUITE SETUP - Initializing framework");
-        log.info("================================================");
-
-        // Trigger TestConfig static initializer (sets ConfigManager.CONFIG)
-        TestConfig.CONFIG.hashCode();
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        log.info("  Environment: {}  |  Grid: {}  |  Debug: {}  |  Headless: {}  |  Threads: {}",
+                CONFIG.getProperty("environment"),
+                CONFIG.getProperty("selenium.grid"),
+                CONFIG.getProperty("selenium.debug"),
+                SeleniumProperties.isHeadlessMode(),
+                CONFIG.getProperty("execution.threadCount"));
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         // Create required directories
         FileUtils.createDirectoryIfNotExists(CONFIG.getProperty("paths.screenshotDir"));
         FileUtils.createDirectoryIfNotExists(CONFIG.getProperty("paths.downloadDir"));
         FileUtils.createDirectoryIfNotExists(CONFIG.getProperty("paths.allureResultsDir"));
-
-        log.info("Environment: {}", CONFIG.getProperty("environment"));
-        log.info("Headless: {}", SeleniumProperties.isHeadlessMode());
-        log.info("Thread Count: {}", Integer.parseInt(CONFIG.getProperty("execution.threadCount")));
-        log.info("================================================");
     }
 
     @BeforeMethod(alwaysRun = true)
     public void setUp(Method method) {
-        log.info("================================================");
-        log.info("SETUP: {} - Starting test: {}", 
-                Thread.currentThread().getName(), method.getName());
-        log.info("================================================");
-
-        log.info("Browser: CHROME (only supported browser)");
-
         // Create driver and store in ThreadLocal
         WebDriver threadDriver = DriverFactory.createDriver();
         DriverManager.setDriver(threadDriver);
         this.driver = threadDriver;
-
-        log.info("Driver initialized for test: {} on thread: {}",
-                method.getName(), Thread.currentThread().getName());
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown(ITestResult result, Method method) {
-        log.info("================================================");
-        log.info("TEARDOWN: {} - Test: {}",
-                Thread.currentThread().getName(), method.getName());
-
         // Handle screenshot on failure
         if (!result.isSuccess() && Boolean.parseBoolean(CONFIG.getProperty("execution.screenshotOnFailure"))) {
-            log.warn("Test FAILED: {} - Capturing screenshot", method.getName());
+            log.warn("❌ {} – FAILED, screenshot captured", method.getName());
             try {
                 // Verify driver session is still valid
                 driver.getTitle();
@@ -83,7 +65,7 @@ public abstract class TestBase {
                 ScreenshotUtils.attachScreenshotToAllure(method.getName() + " - Failure Screenshot", screenshotBytes);
                 ScreenshotUtils.captureScreenshot(driver, method.getName());
             } catch (Exception e) {
-                log.warn("Could not capture screenshot - driver session may be invalid: {}", e.getMessage());
+                log.warn("  Could not capture screenshot – session invalid: {}", e.getMessage());
                 // Still store empty marker so AllureListener knows a failure happened
                 ScreenshotHolder.set(new byte[0]);
             }
@@ -91,23 +73,16 @@ public abstract class TestBase {
 
         // Quit driver
         DriverManager.quitDriver();
-        log.info("Driver cleaned up for test: {}", method.getName());
-        log.info("================================================");
     }
 
     @AfterSuite(alwaysRun = true)
     public void afterSuite() {
-        log.info("================================================");
-        log.info("TEST SUITE TEARDOWN - Cleaning up resources");
-        log.info("================================================");
-
-        // Cleanup old screenshots
         if (Boolean.parseBoolean(CONFIG.getProperty("execution.screenshotOnFailure"))) {
             ScreenshotUtils.cleanupOldScreenshots(Integer.parseInt(CONFIG.getProperty("execution.maxScreenshotHistory")));
         }
 
-        log.info("Framework teardown complete");
-        log.info("================================================");
+        log.info("  Clean-up complete");
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
     /**

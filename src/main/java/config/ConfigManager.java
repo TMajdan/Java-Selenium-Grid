@@ -16,10 +16,25 @@ import java.util.Map;
 @Slf4j
 public class ConfigManager {
 
-    public static ConfigManager CONFIG;
+    private static final String PROPERTIES_PATH = "src/main/resources/";
+
+    public static final ConfigManager CONFIG = initConfig();
 
     private final Yaml yaml = new Yaml();
     private final HashMap<String, Object> config = new HashMap<>();
+
+    private static ConfigManager initConfig() {
+        ConfigManager config = new ConfigManager(PROPERTIES_PATH + "BasicSettings.yaml");
+        String environment = config.getProperty("environment");
+        if (environment != null) {
+            String envUpper = environment.toUpperCase();
+            config.loadFileSettings(PROPERTIES_PATH + "setting/" + String.format("%sSettings.yaml", envUpper));
+            config.loadFileSettings(PROPERTIES_PATH + "users/" + String.format("%sUsers.yaml", envUpper));
+        } else {
+            log.warn("No 'environment' property found in BasicSettings.yaml");
+        }
+        return config;
+    }
 
     public ConfigManager(String filename) {
         loadFileSettings(filename);

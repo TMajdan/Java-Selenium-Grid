@@ -47,7 +47,7 @@ public final class ScreenshotUtils {
             File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             Path destination = Paths.get(filePath);
             Files.copy(screenshotFile.toPath(), destination);
-            log.info("Screenshot saved: {}", destination.toAbsolutePath());
+            log.debug("Screenshot saved: {}", destination.toAbsolutePath());
             return destination.toAbsolutePath().toString();
         } catch (IOException e) {
             throw new ScreenshotException("Failed to save screenshot to: " + filePath, e);
@@ -86,15 +86,6 @@ public final class ScreenshotUtils {
     }
 
     /**
-     * Attaches a screenshot as PNG to the Allure report using programmatic API.
-     *
-     * @param screenshot the screenshot bytes
-     */
-    public static void attachScreenshotToAllure(byte[] screenshot) {
-        Allure.attachment("screenshot.png", new ByteArrayInputStream(screenshot));
-    }
-
-    /**
      * Attaches a screenshot to Allure with a custom name using programmatic API.
      *
      * @param name       the attachment name
@@ -122,7 +113,7 @@ public final class ScreenshotUtils {
      */
     public static String captureAndAttachScreenshot(WebDriver driver, String testName) {
         byte[] screenshotBytes = captureScreenshotAsBytes(driver);
-        attachScreenshotToAllure(testName + " - Failure Screenshot", screenshotBytes);
+        attachScreenshotToAllure(testName, screenshotBytes);
         return captureScreenshot(driver, testName);
     }
 

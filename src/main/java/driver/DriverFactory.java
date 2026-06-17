@@ -33,8 +33,6 @@ public final class DriverFactory {
     }
 
     private static WebDriver createLocalDriver() {
-        log.info("Creating local ChromeDriver");
-
         ChromeOptions options = DesktopCapabilitiesManager.setChromeOptions();
         ChromeDriver originalDriver = new ChromeDriver(options);
 
@@ -42,7 +40,7 @@ public final class DriverFactory {
         WebDriver decorated = decorator.decorate(originalDriver);
 
         configureDriver(decorated);
-        log.info("Local ChromeDriver created successfully");
+        log.debug("Local ChromeDriver created");
         return decorated;
     }
 
