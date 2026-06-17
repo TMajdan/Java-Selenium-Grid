@@ -7,8 +7,8 @@ environments:
     adminPassword: "admin_dev_pass"
 
   qa:
-    baseUrl: "https://www.saucedemo.com"
-    apiBaseUrl: "https://www.saucedemo.com/api"
+    baseUrl: "https://www.google.com.com"
+    apiBaseUrl: "https://www.google.com/api"
     dbConnection: "jdbc:postgresql://qa-db:5432/app"
     adminUsername: "admin_qa"
     adminPassword: "admin_qa_pass"

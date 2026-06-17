@@ -1,0 +1,3 @@
+baseUrl: "https://zt004.example.com"
+apiBaseUrl: "https://api.zt004.example.com"
+dbConnection: "jdbc:postgresql://zt004-db:5432/app"

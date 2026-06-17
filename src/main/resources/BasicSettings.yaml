@@ -1,0 +1,44 @@
+environment: ZT004
+
+execution:
+    headless: false
+    timeout: 20
+    pageLoadTimeout: 30
+    implicitlyWait: 5
+    pollingInterval: 250
+    threadCount: 4
+    retryCount: 2
+    screenshotOnFailure: true
+    maxScreenshotHistory: 50
+
+selenium:
+    grid: false
+    debug: false
+    headless: false
+    maximizeWindow: true
+    incognitoMode: false
+    disableNotifications: true
+    disablePopups: true
+    disableExtensions: true
+    acceptInsecureCerts: false
+    pageLoadStrategy: "normal"
+    windowWidth: 1920
+    windowHeight: 1080
+
+paths:
+    downloadDir: "target/downloads"
+    screenshotDir: "target/screenshots"
+    logsDir: "target/logs"
+    allureResultsDir: "target/allure-results"
+    testDataDir: "src/test/resources/testdata"
+
+grid:
+    hubUrl: "http://localhost:4444/wd/hub"
+    enableVnc: false
+    enableVideo: false
+
+remote:
+    enableProxy: false
+    proxyHost: ""
+    proxyPort: 0
+    proxyProtocol: "http"
