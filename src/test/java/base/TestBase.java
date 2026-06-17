@@ -1,4 +1,4 @@
-package test.base;
+package base;
 
 import lombok.extern.slf4j.Slf4j;
 import config.TestConfig;

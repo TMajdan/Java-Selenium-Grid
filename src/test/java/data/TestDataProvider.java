@@ -1,4 +1,4 @@
-package test.data;
+package data;
 
 import models.User;
 import utils.TestDataFactory;

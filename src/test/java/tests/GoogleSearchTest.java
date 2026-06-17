@@ -1,4 +1,4 @@
-package test.tests;
+package tests;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -6,8 +6,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import test.base.TestBase;
-import test.data.TestDataProvider;
+import base.TestBase;
+import data.TestDataProvider;
 import utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
