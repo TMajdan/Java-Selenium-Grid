@@ -1,6 +1,5 @@
 package api;
 
-import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
@@ -14,10 +13,9 @@ public final class ApiClient {
     /**
      * Creates a base RequestSpecification with common settings:
      * base URL from config, relaxed HTTPS, JSON content type, and request/response logging.
+     * Thread-safe – each call creates an independent RequestSpecification.
      */
     public static RequestSpecification withBaseSpec() {
-        RestAssured.reset();
-
         return new RequestSpecBuilder()
                 .setBaseUri(CONFIG.getPropertyOrWarn("apiBaseUrl"))
                 .setContentType(ContentType.JSON)
@@ -29,10 +27,9 @@ public final class ApiClient {
 
     /**
      * Creates a RequestSpecification with custom base URI and custom content type.
+     * Thread-safe – each call creates an independent RequestSpecification.
      */
     public static RequestSpecification withCustomSpec(String baseUri, String contentType) {
-        RestAssured.reset();
-
         return new RequestSpecBuilder()
                 .setBaseUri(baseUri)
                 .setContentType(contentType)

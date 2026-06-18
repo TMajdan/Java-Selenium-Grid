@@ -1,4 +1,4 @@
-package config;
+package database;
 
 import utils.Utils;
 import lombok.AllArgsConstructor;

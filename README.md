@@ -24,16 +24,28 @@ Chrome-only, supports local and remote execution.
 
 ```
 src/main/java/
-├── config/          ConfigManager, TestConfig, TestProperties, BrowserType
-├── core/            Custom exceptions
-├── driver/          DriverFactory, DriverManager, DesktopCapabilitiesManager,
-│                    DriverListener, SeleniumProperties
+├── config/          ConfigManager, TestProperties, BrowserType, TimeoutConfig,
+│                    SeleniumProperties
+├── exception/       FrameworkException, ConfigurationException,
+│                    DriverInitializationException, ScreenshotException
+├── driver/          DriverFactory, DriverManager, ChromeOptionsProvider,
+│                    DriverListener
 ├── listeners/       TestListener, AllureListener, RetryAnalyzer, RetryListener
-├── pages/           BasePage, LoginPage
-├── utils/           WaitUtils, ScreenshotUtils, DateUtils, FileUtils, etc.
-├── factory/         PageFactory
-├── models/          User, Environment, TestDataModel
-└── api/             ApiClient (REST Assured)
+├── pages/           BasePage, LoginPage, GoogleHomePage, GoogleResultsPage,
+│                    PageFactory
+│   └── actions/     BaseActions, BrowserActions, CheckActions, ClickActions,
+│                    GetActions, SendActions
+├── database/        DatabaseConnection
+├── api/             ApiClient, ApiRequestExecutor, RequestResponseLogger
+├── models/          JsonObject
+└── utils/
+    ├── Utils.java
+    ├── wait/        WaitUtils
+    ├── screenshot/  ScreenshotUtils, ScreenshotHolder
+    ├── json/        JsonUtils
+    ├── file/        FileUtils
+    ├── date/        DateUtils
+    └── db/          DatabaseUtils
 
 src/main/resources/
 ├── BasicSettings.yaml           Base config (env, selenium flags, paths, grid)
@@ -41,9 +53,8 @@ src/main/resources/
 ├── users/ZT004Users.yaml        Environment users
 └── logback.xml
 
-src/test/java/test/
+src/test/java/
 ├── base/TestBase.java
-├── data/TestDataProvider.java
 └── tests/GoogleSearchTest.java
 ```
 

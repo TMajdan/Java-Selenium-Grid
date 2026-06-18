@@ -1,11 +1,11 @@
 package pages;
 
-import actions.BaseActions;
-import actions.BrowserActions;
-import actions.CheckActions;
-import actions.ClickActions;
-import actions.GetActions;
-import actions.SendActions;
+import pages.actions.BaseActions;
+import pages.actions.BrowserActions;
+import pages.actions.CheckActions;
+import pages.actions.ClickActions;
+import pages.actions.GetActions;
+import pages.actions.SendActions;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import static config.ConfigManager.CONFIG;

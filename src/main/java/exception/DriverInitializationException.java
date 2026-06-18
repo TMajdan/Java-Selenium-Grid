@@ -1,4 +1,4 @@
-package core;
+package exception;
 
 /**
  * Exception thrown when WebDriver initialization fails.

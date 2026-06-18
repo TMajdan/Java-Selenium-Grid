@@ -1,8 +1,5 @@
 package tests;
 
-import actions.BaseActions;
-import actions.CheckActions;
-import actions.ClickActions;
 import base.TestBase;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -10,18 +7,14 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
-
-import java.util.List;
+import pages.GoogleHomePage;
+import pages.GoogleResultsPage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Example test class demonstrating Google Search functionality.
- * Shows real-world usage of the framework with a public website.
+ * Example test class demonstrating Google Search functionality using Page Object Model.
  * <p>
  * TestNG groups: smoke, search, google
  * Parallel execution safe via ThreadLocal WebDriver in TestBase.
@@ -31,23 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Test(groups = {"google", "search", "smoke"})
 public class GoogleSearchTest extends TestBase {
 
-    private static final String GOOGLE_URL = "https://www.google.com";
-    private static final By SEARCH_INPUT = By.name("q");
-    private static final By RESULT_STATS = By.id("result-stats");
-    private static final By FIRST_RESULT_TITLE = By.cssSelector("h3");
-    private static final By SEARCH_RESULT_LINKS = By.cssSelector("div#search a[href^='http']");
-    private static final By SUGGESTIONS_LIST = By.cssSelector("ul[role='listbox'] li");
-    private static final By COOKIE_ACCEPT_BUTTON = By.id("L2AGLb");
-
     @Test(description = "Verify Google homepage loads successfully")
     @Severity(SeverityLevel.BLOCKER)
     @Story("Google Search - Homepage")
     @Description("Verify that the Google homepage loads with the correct title")
     public void testGoogleHomePageLoads() {
-        getDriver().get(GOOGLE_URL);
-        BaseActions.waitForPageLoaded(getDriver());
+        GoogleHomePage homePage = new GoogleHomePage().open();
 
-        String pageTitle = getDriver().getTitle();
+        String pageTitle = homePage.getHomePageTitle();
         assertThat(pageTitle)
                 .as("Google homepage title should contain 'Google'")
                 .containsIgnoringCase("Google");
@@ -58,24 +42,19 @@ public class GoogleSearchTest extends TestBase {
     @Story("Google Search - Results")
     @Description("Verify that searching for a keyword returns relevant results")
     public void testSearchWithKeyword() {
-        getDriver().get(GOOGLE_URL);
-        BaseActions.waitForPageLoaded(getDriver());
-        handleCookieConsent();
+        GoogleResultsPage results = new GoogleHomePage()
+                .open()
+                .search("Selenium WebDriver");
 
-        performSearch("Selenium WebDriver");
-
-        CheckActions.waitForElementsCount(getDriver(), SEARCH_RESULT_LINKS, 1);
-
-        List<WebElement> results = getDriver().findElements(SEARCH_RESULT_LINKS);
-        assertThat(results)
+        assertThat(results.getResultCount())
                 .as("Search results should not be empty")
-                .isNotEmpty();
+                .isGreaterThan(0);
 
-        WebElement firstResult = getDriver().findElement(FIRST_RESULT_TITLE);
-        assertThat(firstResult.isDisplayed())
+        assertThat(results.isFirstResultDisplayed())
                 .as("First search result should be visible")
                 .isTrue();
-        assertThat(firstResult.getText())
+
+        assertThat(results.getFirstResultTitle())
                 .as("First result text should not be empty")
                 .isNotBlank();
     }
@@ -87,15 +66,11 @@ public class GoogleSearchTest extends TestBase {
     // @Story("Google Search - Multiple Queries")
     // @Description("Verify that different search queries return relevant results")
     // public void testMultipleSearchQueries(String searchKeyword) {
-    //     getDriver().get(GOOGLE_URL);
-    //     BaseActions.waitForPageLoaded(getDriver());
-    //     handleCookieConsent();
-
-    //     performSearch(searchKeyword);
-
-    //     CheckActions.waitForVisible(getDriver(), RESULT_STATS);
-
-    //     String stats = getDriver().findElement(RESULT_STATS).getText();
+    //     GoogleResultsPage results = new GoogleHomePage()
+    //             .open()
+    //             .search(searchKeyword);
+    //
+    //     String stats = results.getResultStats();
     //     assertThat(stats)
     //             .as("Search result stats should be displayed for: " + searchKeyword)
     //             .isNotBlank();
@@ -106,16 +81,10 @@ public class GoogleSearchTest extends TestBase {
     // @Story("Google Search - Suggestions")
     // @Description("Verify that search suggestions appear when typing in the search box")
     // public void testSearchSuggestions() {
-    //     getDriver().get(GOOGLE_URL);
-    //     BaseActions.waitForPageLoaded(getDriver());
-    //     handleCookieConsent();
-
-    //     WebElement searchBox = getDriver().findElement(SEARCH_INPUT);
-    //     searchBox.sendKeys("Selenium");
-
-    //     List<WebElement> suggestionList = CheckActions.waitForElementsCount(
-    //             getDriver(), SUGGESTIONS_LIST, 1);
-    //     assertThat(suggestionList)
+    //     GoogleHomePage homePage = new GoogleHomePage().open();
+    //     List<WebElement> suggestions = homePage.typeQuery("Selenium").getSuggestions();
+    //
+    //     assertThat(suggestions)
     //             .as("Search suggestions should appear")
     //             .isNotEmpty();
     // }
@@ -125,35 +94,13 @@ public class GoogleSearchTest extends TestBase {
     // @Story("Google Search - URL Verification")
     // @Description("Verify that the URL changes after performing a search")
     // public void testSearchResultsUrl() {
-    //     getDriver().get(GOOGLE_URL);
-    //     BaseActions.waitForPageLoaded(getDriver());
-    //     handleCookieConsent();
-
-    //     performSearch("Test Automation Framework");
-
-    //     String currentUrl = getDriver().getCurrentUrl();
+    //     GoogleResultsPage results = new GoogleHomePage()
+    //             .open()
+    //             .search("Test Automation Framework");
+    //
+    //     String currentUrl = results.getResultsPageUrl();
     //     assertThat(currentUrl)
     //             .as("URL should contain the search query")
     //             .contains("q=Test+Automation+Framework");
     // }
-
-    // ========================================================================
-    // Helper methods
-    // ========================================================================
-
-    private void handleCookieConsent() {
-        try {
-            ClickActions.click(getDriver(), COOKIE_ACCEPT_BUTTON);
-        } catch (Exception e) {
-            // Cookie consent not present, continue
-        }
-    }
-
-    private void performSearch(String query) {
-        ClickActions.click(getDriver(), SEARCH_INPUT);
-        WebElement searchBox = getDriver().findElement(SEARCH_INPUT);
-        searchBox.clear();
-        searchBox.sendKeys(query);
-        searchBox.sendKeys(Keys.ENTER);
-    }
 }

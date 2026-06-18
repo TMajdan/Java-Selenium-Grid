@@ -1,6 +1,7 @@
-package utils;
+package utils.db;
 
-import config.DatabaseConnection;
+import database.DatabaseConnection;
+import utils.Utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

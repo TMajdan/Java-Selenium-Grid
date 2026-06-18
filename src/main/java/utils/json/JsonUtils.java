@@ -1,4 +1,4 @@
-package utils;
+package utils.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import core.FrameworkException;
+import exception.FrameworkException;
 
 import java.io.File;
 import java.io.IOException;

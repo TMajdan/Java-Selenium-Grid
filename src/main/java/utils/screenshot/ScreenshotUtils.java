@@ -1,11 +1,13 @@
-package utils;
+package utils.screenshot;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import static config.ConfigManager.CONFIG;
-import core.ScreenshotException;
+import exception.ScreenshotException;
+import utils.date.DateUtils;
+import utils.file.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -70,18 +72,30 @@ public final class ScreenshotUtils {
     }
 
     /**
-     * Captures a full-page screenshot (scroll + stitch) as bytes.
+     * Captures a screenshot of the current viewport as bytes.
+     * For a true full-page screenshot, consider adding the AShot library
+     * ({@code ru.yandex.qatools.ashot:ashot}) which supports viewport stitching.
      *
      * @param driver the WebDriver instance
-     * @return the full-page screenshot as bytes
+     * @return the viewport screenshot as a byte array
+     * @see #captureViewportScreenshotAsBytes(WebDriver)
      */
     public static byte[] captureFullPageScreenshot(WebDriver driver) {
+        return captureViewportScreenshotAsBytes(driver);
+    }
+
+    /**
+     * Captures a screenshot of the current viewport as bytes.
+     *
+     * @param driver the WebDriver instance
+     * @return the viewport screenshot as a byte array, or empty array on failure
+     */
+    public static byte[] captureViewportScreenshotAsBytes(WebDriver driver) {
         try {
-            // Attempt to capture the full page using Chrome DevTools Protocol
             return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
         } catch (Exception e) {
-            log.error("Failed to capture full-page screenshot", e);
-            return captureScreenshotAsBytes(driver);
+            log.error("Failed to capture screenshot", e);
+            return new byte[0];
         }
     }
 

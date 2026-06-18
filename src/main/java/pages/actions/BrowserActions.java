@@ -1,8 +1,9 @@
-package actions;
+package pages.actions;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import utils.wait.WaitUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -21,7 +22,7 @@ public final class BrowserActions {
 
     public static void switchToFrame(WebDriver driver, By locator) {
         log.debug("Switching to frame: {}", locator);
-        WebElement frame = BaseActions.getDefaultWait(driver)
+        WebElement frame = WaitUtils.getDefaultWait(driver)
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
         driver.switchTo().frame(frame);
     }
@@ -46,7 +47,7 @@ public final class BrowserActions {
     }
 
     private static Alert alert(WebDriver driver) {
-        return BaseActions.getDefaultWait(driver).until(ExpectedConditions.alertIsPresent());
+        return WaitUtils.getDefaultWait(driver).until(ExpectedConditions.alertIsPresent());
     }
 
     public static void scrollIntoView(WebDriver driver, WebElement element) {

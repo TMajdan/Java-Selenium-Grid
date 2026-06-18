@@ -32,14 +32,10 @@
         <slf4j.version>2.0.17</slf4j.version>
         <logback.version>1.5.18</logback.version>
         <rest-assured.version>5.5.1</rest-assured.version>
-        <javafaker.version>1.0.2</javafaker.version>
-        <extentreports.version>5.1.2</extentreports.version>
         <commons-io.version>2.18.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <orgjson.version>20231013</orgjson.version>
-        <gson.version>2.11.0</gson.version>
         <jsonpath.version>2.9.0</jsonpath.version>
-        <simpleyaml.version>1.8.3</simpleyaml.version>
 
         <!-- Plugins -->
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -48,13 +44,6 @@
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
@@ -166,22 +155,6 @@
             <version>${rest-assured.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
-        <!-- JavaFaker -->
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>${javafaker.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->
-        <!-- ExtentReports -->
-        <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>extentreports</artifactId>
-            <version>${extentreports.version}</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <!-- Apache Commons IO -->
         <dependency>
@@ -206,28 +179,12 @@
             <version>${orgjson.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <!-- Gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
         <!-- JsonPath -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonpath.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.Carleslc.Simple-YAML/Simple-Yaml -->
-        <!-- Simple YAML (via JitPack) -->
-        <dependency>
-            <groupId>com.github.Carleslc.Simple-YAML</groupId>
-            <artifactId>Simple-Yaml</artifactId>
-            <version>${simpleyaml.version}</version>
         </dependency>
     </dependencies>
 

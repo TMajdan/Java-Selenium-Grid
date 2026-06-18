@@ -1,5 +1,9 @@
 package api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.qameta.allure.Allure;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
@@ -13,69 +17,78 @@ import java.util.Optional;
 
 /**
  * Custom RestAssured filter that logs all HTTP requests and responses
- * with pretty-printed JSON bodies for better debugging and reporting.
+ * with pretty-printed JSON bodies for debugging and attaches them to Allure reports.
  */
 @Slf4j
 public class RequestResponseLogger implements Filter {
 
-    @Override
-    public Response filter(FilterableRequestSpecification requestSpec, FilterableResponseSpecification responseSpec, FilterContext filterContext) {
-        logRequest(requestSpec);
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+            .enable(SerializationFeature.INDENT_OUTPUT);
 
-        Response response = null;
+    @Override
+    public Response filter(FilterableRequestSpecification requestSpec,
+                           FilterableResponseSpecification responseSpec,
+                           FilterContext filterContext) {
+        String requestLog = buildRequestLog(requestSpec);
+        log.debug(requestLog);
+        Allure.addAttachment("API Request", "text/plain", requestLog);
+
+        Response response;
         try {
             response = filterContext.next(requestSpec, responseSpec);
-            logResponse(response);
         } catch (Exception e) {
             log.error("API request failed: {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("API request failed", e);
         }
+
+        String responseLog = buildResponseLog(response);
+        log.debug(responseLog);
+        Allure.addAttachment("API Response", "text/plain", responseLog);
+
         return response;
     }
 
-    private void logRequest(FilterableRequestSpecification requestSpec) {
+    private String buildRequestLog(FilterableRequestSpecification requestSpec) {
         URI uri = URI.create(requestSpec.getURI());
         String requestBody = requestSpec.getBody() != null
                 ? formatBody(requestSpec.getBody().toString())
                 : "";
 
-        System.out.println("================== REQUEST ==================");
-        System.out.println(requestSpec.getMethod() + " " + uri.getPath());
-        System.out.println("Host: " + uri.getHost());
-        System.out.println(requestSpec.getHeaders());
-        System.out.println("Content-Length: " + requestBody.length());
+        StringBuilder sb = new StringBuilder();
+        sb.append("================== REQUEST ==================\n");
+        sb.append(requestSpec.getMethod()).append(" ").append(uri.getPath()).append("\n");
+        sb.append("Host: ").append(uri.getHost()).append("\n");
+        sb.append(requestSpec.getHeaders()).append("\n");
         if (!requestBody.isEmpty()) {
-            System.out.println(requestBody);
+            sb.append("\n").append(requestBody).append("\n");
         }
-        System.out.println("----------------------------------------------");
+        sb.append("----------------------------------------------\n");
+        return sb.toString();
     }
 
-    private void logResponse(Response response) {
+    private String buildResponseLog(Response response) {
         String responseBody = Optional.ofNullable(response.getBody())
                 .map(ResponseBody::asString)
                 .orElse("");
 
-        System.out.println("================== RESPONSE ==================");
-        System.out.println("HTTP/1.1 " + response.getStatusCode() + " " + response.getStatusLine());
-        System.out.println("Content-Type: " + response.getContentType());
-        System.out.println("Content-Length: " + responseBody.length());
+        StringBuilder sb = new StringBuilder();
+        sb.append("================== RESPONSE ==================\n");
+        sb.append("HTTP/1.1 ").append(response.getStatusCode())
+                .append(" ").append(response.getStatusLine()).append("\n");
+        sb.append("Content-Type: ").append(response.getContentType()).append("\n");
         if (!responseBody.isEmpty()) {
-            System.out.println("");
-            System.out.println(formatBody(responseBody));
+            sb.append("\n").append(formatBody(responseBody)).append("\n");
         }
-        System.out.println("----------------------------------------------");
+        sb.append("----------------------------------------------\n");
+        return sb.toString();
     }
 
     private String formatBody(String body) {
-        // Try to pretty-print JSON; fallback to raw string
         try {
-            return new com.google.gson.GsonBuilder()
-                    .setPrettyPrinting()
-                    .serializeNulls()
-                    .create()
-                    .toJson(com.google.gson.JsonParser.parseString(body));
-        } catch (Exception e) {
-            return body;
+            Object json = MAPPER.readValue(body, Object.class);
+            return MAPPER.writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            return body; // fallback: raw string
         }
     }
 }

@@ -1,9 +1,9 @@
-package utils;
+package utils.file;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import core.FrameworkException;
+import exception.FrameworkException;
 
 import java.io.IOException;
 import java.nio.file.Files;

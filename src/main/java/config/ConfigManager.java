@@ -3,40 +3,39 @@ package config;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
-import org.simpleyaml.configuration.file.YamlFile;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Configuration manager that loads YAML files, merges them into a nested map,
- * and provides property lookup by dot-notation keys.
+ * Configuration manager that loads YAML files from the classpath,
+ * merges them into a nested map, and provides property lookup by dot-notation keys.
+ * <p>
+ * Resolution order (highest priority first):
+ * 1. System properties (-Dkey=value)
+ * 2. Environment variables (KEY_NAME)
+ * 3. YAML configuration files
  */
 @Slf4j
 public class ConfigManager {
-
-    private static final String PROPERTIES_PATH = "src/main/resources/";
 
     public static final ConfigManager CONFIG = initConfig();
 
     private final Yaml yaml = new Yaml();
     private final HashMap<String, Object> config = new HashMap<>();
 
-    public ConfigManager(String filename) {
-        loadConfigYaml(filename);
+    public ConfigManager(String classpathResource) {
+        loadConfigYaml(classpathResource);
     }
 
     private static ConfigManager initConfig() {
-        ConfigManager config = new ConfigManager(PROPERTIES_PATH + "BasicSettings.yaml");
+        ConfigManager config = new ConfigManager("BasicSettings.yaml");
         String environment = config.getPropertyOrWarn("environment");
-        if (environment != null) {
+        if (environment != null && !environment.isBlank()) {
             String envUpper = environment.toUpperCase();
-            config.loadConfigYaml(PROPERTIES_PATH + "setting/" + String.format("%sSettings.yaml", envUpper));
-            config.loadConfigYaml(PROPERTIES_PATH + "users/" + String.format("%sUsers.yaml", envUpper));
+            config.loadConfigYaml("setting/" + envUpper + "Settings.yaml");
+            config.loadConfigYaml("users/" + envUpper + "Users.yaml");
         } else {
             log.warn("No 'environment' property found in BasicSettings.yaml");
         }
@@ -44,32 +43,25 @@ public class ConfigManager {
     }
 
     /**
-     * Loads a specified configuration file and merges it into the config map.
+     * Loads a YAML configuration file from the classpath and merges it into the config map.
      *
-     * @param configPath Path to the configuration file.
+     * @param classpathResource classpath-relative path (e.g. "BasicSettings.yaml")
      */
-    private void loadConfigYaml(String configPath) {
-        try {
-            YamlFile yamlFile = new YamlFile(configPath);
-
-            if (!yamlFile.exists()) {
-                throw new FileNotFoundException("Configuration file not found: " + configPath);
+    private void loadConfigYaml(String classpathResource) {
+        try (InputStream stream = getClass().getClassLoader()
+                .getResourceAsStream(classpathResource)) {
+            if (stream == null) {
+                log.warn("Configuration file not found in classpath: {}", classpathResource);
+                return;
             }
-            yamlFile.load();
-
-            // Parse via snakeyaml and merge into the config map
-            try (InputStream stream = new FileInputStream(configPath)) {
-                Object loaded = this.yaml.load(stream);
-                if (loaded instanceof Map) {
-                    //noinspection unchecked
-                    updateMap(this.config, (Map<String, Object>) loaded);
-                    //log.info("Loaded configuration from: {}", configPath);
-                }
+            Object loaded = this.yaml.load(stream);
+            if (loaded instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> loadedMap = (Map<String, Object>) loaded;
+                updateMap(this.config, loadedMap);
             }
-        } catch (FileNotFoundException e) {
-            log.warn("Configuration file not found: {}", configPath);
         } catch (IOException e) {
-            log.error("Error while loading configuration from: {}", configPath, e);
+            log.error("Error while loading configuration from classpath: {}", classpathResource, e);
         }
     }
 
@@ -87,14 +79,21 @@ public class ConfigManager {
 
     public String getPropertyOrWarn(String propertyName) {
         try {
+            // 1. System property (highest priority)
             String systemProperty = System.getProperty(propertyName);
-            String value;
-            if (systemProperty != null) {
-                value = systemProperty;
-            } else {
-                value = findProperty(config, propertyName);
+            if (systemProperty != null && !systemProperty.isBlank()) {
+                return systemProperty;
             }
 
+            // 2. Environment variable (second priority – for secrets)
+            String envKey = propertyName.replace('.', '_').toUpperCase();
+            String envValue = System.getenv(envKey);
+            if (envValue != null && !envValue.isBlank()) {
+                return envValue;
+            }
+
+            // 3. YAML config (lowest priority)
+            String value = findProperty(config, propertyName);
             if (value == null || value.isBlank()) {
                 System.err.printf("[YAML CONFIGURATION] Config key is empty: %s%n", propertyName);
             }

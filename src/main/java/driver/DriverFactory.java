@@ -1,8 +1,9 @@
 package driver;
 
+import config.TimeoutConfig;
 import lombok.extern.slf4j.Slf4j;
 import static config.ConfigManager.CONFIG;
-import core.DriverInitializationException;
+import exception.DriverInitializationException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -33,7 +34,7 @@ public final class DriverFactory {
     }
 
     private static WebDriver createLocalDriver() {
-        ChromeOptions options = DesktopCapabilitiesManager.setChromeOptions();
+        ChromeOptions options = ChromeOptionsProvider.buildChromeOptions();
         ChromeDriver originalDriver = new ChromeDriver(options);
 
         EventFiringDecorator<WebDriver> decorator = new EventFiringDecorator<>(LISTENER);
@@ -47,7 +48,7 @@ public final class DriverFactory {
     private static WebDriver createRemoteDriver() {
         log.info("Creating RemoteWebDriver");
 
-        ChromeOptions options = DesktopCapabilitiesManager.setChromeOptions();
+        ChromeOptions options = ChromeOptionsProvider.buildChromeOptions();
         URL remoteUrl = parseRemoteUrl();
 
         RemoteWebDriver originalDriver;
@@ -66,10 +67,10 @@ public final class DriverFactory {
     }
 
     private static void configureDriver(WebDriver driver) {
-        driver.manage().timeouts().pageLoadTimeout(
-                Duration.ofSeconds(Integer.parseInt(CONFIG.getPropertyOrWarn("execution.pageLoadTimeout"))));
-        driver.manage().timeouts().implicitlyWait(
-                Duration.ofSeconds(Integer.parseInt(CONFIG.getPropertyOrWarn("execution.implicitlyWait"))));
+        // Never mix implicit and explicit waits – set implicitlyWait to 0.
+        // All waiting is handled by WaitUtils / BaseActions using explicit waits only.
+        driver.manage().timeouts().implicitlyWait(Duration.ZERO);
+        driver.manage().timeouts().pageLoadTimeout(TimeoutConfig.getPageLoadDuration());
 
         if (Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.maximizeWindow"))) {
             driver.manage().window().maximize();

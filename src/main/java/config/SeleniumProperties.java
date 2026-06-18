@@ -1,4 +1,4 @@
-package driver;
+package config;
 
 import static config.ConfigManager.CONFIG;
 

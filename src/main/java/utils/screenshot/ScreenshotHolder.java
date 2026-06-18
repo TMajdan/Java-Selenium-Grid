@@ -1,4 +1,4 @@
-package utils;
+package utils.screenshot;
 
 /**
  * ThreadLocal holder for the last captured screenshot bytes.

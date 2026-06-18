@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provides pre-configured Chrome options for remote desktop execution.
+ * Provides pre-configured ChromeOptions for ChromeDriver and RemoteWebDriver.
  */
-public final class DesktopCapabilitiesManager {
+public final class ChromeOptionsProvider {
 
-    private DesktopCapabilitiesManager() {
+    private ChromeOptionsProvider() {
     }
 
-    public static ChromeOptions setChromeOptions() {
+    public static ChromeOptions buildChromeOptions() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments(
                 "--no-first-run",

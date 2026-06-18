@@ -1,4 +1,4 @@
-package utils;
+package utils.date;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

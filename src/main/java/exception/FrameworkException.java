@@ -1,4 +1,4 @@
-package core;
+package exception;
 
 /**
  * Base exception class for all framework-specific exceptions.

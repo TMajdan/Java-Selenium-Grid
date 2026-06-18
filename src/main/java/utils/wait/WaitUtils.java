@@ -1,9 +1,9 @@
-package utils;
+package utils.wait;
 
+import config.TimeoutConfig;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import static config.ConfigManager.CONFIG;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -18,15 +18,15 @@ import java.util.function.Function;
 
 /**
  * Utility class for WebDriver wait operations.
- * All waits use configurable timeouts from the YAML configuration.
+ * All waits use configurable timeouts from TimeoutConfig.
  * No Thread.sleep() is used anywhere in this class.
+ * <p>
+ * This is the SINGLE SOURCE OF TRUTH for wait logic.
+ * BaseActions delegates to this class for all wait operations.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WaitUtils {
-
-    private static final int DEFAULT_TIMEOUT = Integer.parseInt(CONFIG.getPropertyOrWarn("execution.timeout"));
-    private static final int POLLING_INTERVAL = Integer.parseInt(CONFIG.getPropertyOrWarn("execution.pollingInterval"));
 
     /**
      * Creates a WebDriverWait with the configured default timeout and polling interval.
@@ -35,8 +35,8 @@ public final class WaitUtils {
      * @return a configured WebDriverWait
      */
     public static WebDriverWait getDefaultWait(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT));
-        wait.pollingEvery(Duration.ofMillis(POLLING_INTERVAL));
+        WebDriverWait wait = new WebDriverWait(driver, TimeoutConfig.getDefaultDuration());
+        wait.pollingEvery(TimeoutConfig.getPollingDuration());
         wait.ignoring(org.openqa.selenium.NoSuchElementException.class);
         return wait;
     }
@@ -44,13 +44,13 @@ public final class WaitUtils {
     /**
      * Creates a WebDriverWait with a custom timeout.
      *
-     * @param driver        the WebDriver instance
+     * @param driver         the WebDriver instance
      * @param timeoutSeconds the timeout in seconds
      * @return a configured WebDriverWait
      */
     public static WebDriverWait getWait(WebDriver driver, int timeoutSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
-        wait.pollingEvery(Duration.ofMillis(POLLING_INTERVAL));
+        wait.pollingEvery(TimeoutConfig.getPollingDuration());
         wait.ignoring(org.openqa.selenium.NoSuchElementException.class);
         return wait;
     }

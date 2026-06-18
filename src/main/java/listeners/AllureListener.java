@@ -1,8 +1,8 @@
 package listeners;
 
 import lombok.extern.slf4j.Slf4j;
-import utils.ScreenshotHolder;
-import utils.ScreenshotUtils;
+import utils.screenshot.ScreenshotHolder;
+import utils.screenshot.ScreenshotUtils;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
