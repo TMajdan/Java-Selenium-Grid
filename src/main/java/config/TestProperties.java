@@ -8,10 +8,10 @@ public final class TestProperties {
     private static final String BASE_URL = "baseUrl";
 
     public static String getEnvironment() {
-        return CONFIG.getProperty(ENVIRONMENT);
+        return CONFIG.getPropertyOrWarn(ENVIRONMENT);
     }
 
     public static String getBaseUrl() {
-        return CONFIG.getProperty(BASE_URL);
+        return CONFIG.getPropertyOrWarn(BASE_URL);
     }
 }

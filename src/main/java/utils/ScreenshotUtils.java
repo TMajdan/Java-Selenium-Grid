@@ -25,7 +25,7 @@ import java.nio.file.Paths;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScreenshotUtils {
 
-    private static final String SCREENSHOT_DIR = CONFIG.getProperty("paths.screenshotDir");
+    private static final String SCREENSHOT_DIR = CONFIG.getPropertyOrWarn("paths.screenshotDir");
 
     static {
         FileUtils.createDirectoryIfNotExists(SCREENSHOT_DIR);

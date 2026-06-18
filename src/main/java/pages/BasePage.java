@@ -1,19 +1,20 @@
 package pages;
 
+import actions.BaseActions;
+import actions.BrowserActions;
+import actions.CheckActions;
+import actions.ClickActions;
+import actions.GetActions;
+import actions.SendActions;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import static config.ConfigManager.CONFIG;
 import driver.DriverManager;
-import utils.WaitUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Base class for all Page Objects.
@@ -27,174 +28,103 @@ public abstract class BasePage {
 
     protected final WebDriver driver;
 
-    /**
-     * Constructor initializes the page with the current thread's WebDriver.
-     */
     protected BasePage() {
         this.driver = DriverManager.getDriver();
     }
 
-    /**
-     * Constructor with explicit WebDriver (for advanced use cases).
-     */
     protected BasePage(WebDriver driver) {
         this.driver = driver;
     }
 
-    /**
-     * Navigates to the specified URL.
-     */
     @Step("Navigate to URL: {url}")
     public void navigateTo(String url) {
-        log.info("Navigating to: {}", url);
-        driver.get(url);
+        BrowserActions.navigateTo(driver, url);
     }
 
-    /**
-     * Navigates to the base URL from configuration.
-     */
     @Step("Navigate to base URL")
     public void navigateToBaseUrl() {
-        String baseUrl = CONFIG.getProperty("baseUrl");
+        String baseUrl = CONFIG.getPropertyOrWarn("baseUrl");
         navigateTo(baseUrl);
     }
 
-    /**
-     * Clicks an element located by the given locator.
-     */
     @Step("Click on element: {locator}")
     public void click(By locator) {
-        log.debug("Clicking element: {}", locator);
-        WebElement element = WaitUtils.waitForClickable(driver, locator);
-        element.click();
+        ClickActions.click(driver, locator);
     }
 
-    /**
-     * Clicks on a WebElement.
-     */
     @Step("Click on element")
     public void click(WebElement element) {
-        log.debug("Clicking element");
-        WaitUtils.waitForClickable(driver, element).click();
+        ClickActions.clickOnElement(driver, element);
     }
 
-    /**
-     * Types text into an input field, clearing it first.
-     */
     @Step("Type '{text}' into element: {locator}")
     public void type(By locator, String text) {
-        log.debug("Typing '{}' into element: {}", text, locator);
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        element.clear();
-        element.sendKeys(text);
+        SendActions.sendKeys(locator, text, driver);
     }
 
-    /**
-     * Types text into a WebElement, clearing it first.
-     */
     @Step("Type '{text}' into element")
     public void type(WebElement element, String text) {
-        log.debug("Typing '{}' into element", text);
-        WaitUtils.waitForVisibleElement(driver, element);
-        element.clear();
-        element.sendKeys(text);
+        SendActions.sendKeys(element, text, driver);
     }
 
-    /**
-     * Gets the visible text of an element.
-     */
     @Step("Get text from element: {locator}")
     public String getText(By locator) {
-        log.debug("Getting text from element: {}", locator);
-        return WaitUtils.waitForVisible(driver, locator).getText();
+        return GetActions.getText(driver, locator);
     }
 
-    /**
-     * Gets the visible text from a WebElement.
-     */
     @Step("Get text from element")
     public String getText(WebElement element) {
-        log.debug("Getting text from element");
-        WaitUtils.waitForVisibleElement(driver, element);
-        return element.getText();
+        return GetActions.getText(driver, element);
     }
 
-    /**
-     * Gets the value of an attribute from an element.
-     */
     @Step("Get attribute '{attribute}' from element: {locator}")
     public String getAttribute(By locator, String attribute) {
-        log.debug("Getting attribute '{}' from element: {}", attribute, locator);
-        return WaitUtils.waitForVisible(driver, locator).getDomAttribute(attribute);
+        return GetActions.getAttribute(driver, locator, attribute);
     }
 
-    /**
-     * Checks if an element is displayed.
-     */
     @Step("Check if element is displayed: {locator}")
     public boolean isDisplayed(By locator) {
         try {
-            return WaitUtils.isElementVisible(driver, locator);
+            return CheckActions.isElementDisplayed(driver, locator);
         } catch (Exception e) {
             return false;
         }
     }
 
-    /**
-     * Checks if an element is displayed (WebElement overload).
-     */
     @Step("Check if element is displayed")
     public boolean isDisplayed(WebElement element) {
         try {
-            return element.isDisplayed();
+            return CheckActions.isElementDisplayed(driver, element);
         } catch (Exception e) {
             return false;
         }
     }
 
-    /**
-     * Checks if an element is enabled.
-     */
     @Step("Check if element is enabled: {locator}")
     public boolean isEnabled(By locator) {
-        return WaitUtils.waitForVisible(driver, locator).isEnabled();
+        return CheckActions.isEnabled(driver, locator);
     }
 
-    /**
-     * Checks if an element is selected (checkbox/radio).
-     */
     @Step("Check if element is selected: {locator}")
     public boolean isSelected(By locator) {
-        return WaitUtils.waitForVisible(driver, locator).isSelected();
+        return CheckActions.isSelected(driver, locator);
     }
 
-    /**
-     * Waits for an element to be visible.
-     */
     @Step("Wait for element to be visible: {locator}")
     public WebElement waitForVisible(By locator) {
-        return WaitUtils.waitForVisible(driver, locator);
+        return CheckActions.waitForVisible(driver, locator);
     }
 
-    /**
-     * Waits for an element to be visible with a custom timeout.
-     */
     @Step("Wait for element to be visible: {locator} (timeout: {timeout}s)")
     public WebElement waitForVisible(By locator, int timeout) {
-        return WaitUtils.waitForVisible(driver, locator, timeout);
+        return CheckActions.waitForVisible(driver, locator, timeout);
     }
 
-    /**
-     * Waits for an element to be clickable.
-     */
     @Step("Wait for element to be clickable: {locator}")
     public WebElement waitForClickable(By locator) {
-        return WaitUtils.waitForClickable(driver, locator);
+        return ClickActions.waitForClickable(driver, locator);
     }
 
-    /**
-     * Scrolls the page until the element is in view.
-     */
     @Step("Scroll element into view: {locator}")
     public void scrollIntoView(By locator) {
         log.debug("Scrolling element into view: {}", locator);
@@ -202,202 +132,113 @@ public abstract class BasePage {
         scrollIntoView(element);
     }
 
-    /**
-     * Scrolls the page until the WebElement is in view.
-     */
     @Step("Scroll element into view")
     public void scrollIntoView(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element);
+        BrowserActions.scrollIntoView(driver, element);
     }
 
-    /**
-     * Performs a click using JavaScript (useful when normal click fails).
-     */
     @Step("JavaScript click on element: {locator}")
     public void javascriptClick(By locator) {
         log.debug("JavaScript clicking element: {}", locator);
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        javascriptClick(element);
+        WebElement element = CheckActions.waitForVisible(driver, locator);
+        BrowserActions.javascriptClick(driver, element);
     }
 
-    /**
-     * Performs a click using JavaScript on a WebElement.
-     */
     @Step("JavaScript click on element")
     public void javascriptClick(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        BrowserActions.javascriptClick(driver, element);
     }
 
-    /**
-     * Hovers over an element.
-     */
     @Step("Hover over element: {locator}")
     public void hover(By locator) {
-        log.debug("Hovering over element: {}", locator);
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        new Actions(driver).moveToElement(element).perform();
+        ClickActions.hover(driver, locator);
     }
 
-    /**
-     * Double-clicks an element.
-     */
     @Step("Double-click on element: {locator}")
     public void doubleClick(By locator) {
-        log.debug("Double-clicking element: {}", locator);
-        WebElement element = WaitUtils.waitForClickable(driver, locator);
-        new Actions(driver).doubleClick(element).perform();
+        ClickActions.doubleClick(driver, locator);
     }
 
-    /**
-     * Right-clicks (context click) an element.
-     */
     @Step("Right-click on element: {locator}")
     public void rightClick(By locator) {
-        log.debug("Right-clicking element: {}", locator);
-        WebElement element = WaitUtils.waitForClickable(driver, locator);
-        new Actions(driver).contextClick(element).perform();
+        ClickActions.rightClick(driver, locator);
     }
 
-    /**
-     * Selects an option from a dropdown by visible text.
-     */
     @Step("Select dropdown option '{visibleText}' from: {locator}")
     public void selectDropdownByText(By locator, String visibleText) {
-        log.debug("Selecting '{}' from dropdown: {}", visibleText, locator);
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        new Select(element).selectByVisibleText(visibleText);
+        SendActions.selectDropdownByText(driver, locator, visibleText);
     }
 
-    /**
-     * Selects an option from a dropdown by value.
-     */
     @Step("Select dropdown option by value '{value}' from: {locator}")
     public void selectDropdownByValue(By locator, String value) {
-        log.debug("Selecting value '{}' from dropdown: {}", value, locator);
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        new Select(element).selectByValue(value);
+        SendActions.selectDropdownByValue(driver, locator, value);
     }
 
-    /**
-     * Selects an option from a dropdown by index.
-     */
     @Step("Select dropdown option by index {index} from: {locator}")
     public void selectDropdownByIndex(By locator, int index) {
-        log.debug("Selecting index '{}' from dropdown: {}", index, locator);
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        new Select(element).selectByIndex(index);
+        SendActions.selectDropdownByIndex(driver, locator, index);
     }
 
-    /**
-     * Gets the currently selected text from a dropdown.
-     */
     @Step("Get selected dropdown text from: {locator}")
     public String getSelectedDropdownText(By locator) {
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        return new Select(element).getFirstSelectedOption().getText();
+        return GetActions.getSelectedDropdownText(driver, locator);
     }
 
-    /**
-     * Gets all options from a dropdown as a list of strings.
-     */
     @Step("Get all dropdown options from: {locator}")
     public List<String> getDropdownOptions(By locator) {
-        WebElement element = WaitUtils.waitForVisible(driver, locator);
-        return new Select(element).getOptions().stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
+        return GetActions.getDropdownOptions(driver, locator);
     }
 
-    /**
-     * Gets the page title.
-     */
     @Step("Get page title")
     public String getPageTitle() {
-        return driver.getTitle();
+        return GetActions.getPageTitle(driver);
     }
 
-    /**
-     * Gets the current URL.
-     */
     @Step("Get current URL")
     public String getCurrentUrl() {
-        return driver.getCurrentUrl();
+        return GetActions.getCurrentUrl(driver);
     }
 
-    /**
-     * Refreshes the current page.
-     */
     @Step("Refresh page")
     public void refreshPage() {
-        log.debug("Refreshing page");
-        driver.navigate().refresh();
-        WaitUtils.waitForPageLoad(driver);
+        BaseActions.refreshPage(driver);
     }
 
-    /**
-     * Switches to a frame by locator.
-     */
     @Step("Switch to frame: {locator}")
     public void switchToFrame(By locator) {
-        log.debug("Switching to frame: {}", locator);
-        WebElement frame = WaitUtils.waitForVisible(driver, locator);
-        driver.switchTo().frame(frame);
+        BrowserActions.switchToFrame(driver, locator);
     }
 
-    /**
-     * Switches back to the default content from a frame.
-     */
     @Step("Switch to default content")
     public void switchToDefaultContent() {
-        log.debug("Switching to default content");
-        driver.switchTo().defaultContent();
+        BrowserActions.switchToDefaultContent(driver);
     }
 
-    /**
-     * Accepts an alert.
-     */
     @Step("Accept alert")
     public void acceptAlert() {
-        log.debug("Accepting alert");
-        WaitUtils.waitForAlert(driver).accept();
+        BrowserActions.acceptAlert(driver);
     }
 
-    /**
-     * Dismisses an alert.
-     */
     @Step("Dismiss alert")
     public void dismissAlert() {
-        log.debug("Dismissing alert");
-        WaitUtils.waitForAlert(driver).dismiss();
+        BrowserActions.dismissAlert(driver);
     }
 
-    /**
-     * Gets the text from an alert.
-     */
     @Step("Get alert text")
     public String getAlertText() {
-        return WaitUtils.waitForAlert(driver).getText();
+        return BrowserActions.getAlertText(driver);
     }
 
-    /**
-     * Finds an element (no wait, quick check).
-     */
     public WebElement findElement(By locator) {
         return driver.findElement(locator);
     }
 
-    /**
-     * Finds a list of elements.
-     */
     public List<WebElement> findElements(By locator) {
         return driver.findElements(locator);
     }
 
-    /**
-     * Waits for the page to fully load.
-     */
     @Step("Wait for page to load")
     public void waitForPageToLoad() {
-        WaitUtils.waitForPageLoad(driver);
+        BaseActions.waitForPageLoaded(driver);
     }
 }

@@ -25,8 +25,8 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WaitUtils {
 
-    private static final int DEFAULT_TIMEOUT = Integer.parseInt(CONFIG.getProperty("execution.timeout"));
-    private static final int POLLING_INTERVAL = Integer.parseInt(CONFIG.getProperty("execution.pollingInterval"));
+    private static final int DEFAULT_TIMEOUT = Integer.parseInt(CONFIG.getPropertyOrWarn("execution.timeout"));
+    private static final int POLLING_INTERVAL = Integer.parseInt(CONFIG.getPropertyOrWarn("execution.pollingInterval"));
 
     /**
      * Creates a WebDriverWait with the configured default timeout and polling interval.

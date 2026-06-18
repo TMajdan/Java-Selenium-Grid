@@ -31,17 +31,17 @@ public abstract class TestBase {
     public void beforeSuite() {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         log.info("  Environment: {}  |  Grid: {}  |  Debug: {}  |  Headless: {}  |  Threads: {}",
-                CONFIG.getProperty("environment"),
-                CONFIG.getProperty("selenium.grid"),
-                CONFIG.getProperty("selenium.debug"),
+                CONFIG.getPropertyOrWarn("environment"),
+                CONFIG.getPropertyOrWarn("selenium.grid"),
+                CONFIG.getPropertyOrWarn("selenium.debug"),
                 SeleniumProperties.isHeadlessMode(),
-                CONFIG.getProperty("execution.threadCount"));
+                CONFIG.getPropertyOrWarn("execution.threadCount"));
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         // Create required directories
-        FileUtils.createDirectoryIfNotExists(CONFIG.getProperty("paths.screenshotDir"));
-        FileUtils.createDirectoryIfNotExists(CONFIG.getProperty("paths.downloadDir"));
-        FileUtils.createDirectoryIfNotExists(CONFIG.getProperty("paths.allureResultsDir"));
+        FileUtils.createDirectoryIfNotExists(CONFIG.getPropertyOrWarn("paths.screenshotDir"));
+        FileUtils.createDirectoryIfNotExists(CONFIG.getPropertyOrWarn("paths.downloadDir"));
+        FileUtils.createDirectoryIfNotExists(CONFIG.getPropertyOrWarn("paths.allureResultsDir"));
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -55,7 +55,7 @@ public abstract class TestBase {
     @AfterMethod(alwaysRun = true)
     public void tearDown(ITestResult result, Method method) {
         // Handle screenshot on failure
-        if (!result.isSuccess() && Boolean.parseBoolean(CONFIG.getProperty("execution.screenshotOnFailure"))) {
+        if (!result.isSuccess() && Boolean.parseBoolean(CONFIG.getPropertyOrWarn("execution.screenshotOnFailure"))) {
             log.warn("❌ {} – FAILED, screenshot captured", method.getName());
             try {
                 // Verify driver session is still valid
@@ -77,8 +77,8 @@ public abstract class TestBase {
 
     @AfterSuite(alwaysRun = true)
     public void afterSuite() {
-        if (Boolean.parseBoolean(CONFIG.getProperty("execution.screenshotOnFailure"))) {
-            ScreenshotUtils.cleanupOldScreenshots(Integer.parseInt(CONFIG.getProperty("execution.maxScreenshotHistory")));
+        if (Boolean.parseBoolean(CONFIG.getPropertyOrWarn("execution.screenshotOnFailure"))) {
+            ScreenshotUtils.cleanupOldScreenshots(Integer.parseInt(CONFIG.getPropertyOrWarn("execution.maxScreenshotHistory")));
         }
 
         log.info("  Clean-up complete");
@@ -96,6 +96,6 @@ public abstract class TestBase {
      * Navigates to the base URL and waits for the page to load.
      */
     public void navigateToBaseUrl() {
-        getDriver().get(CONFIG.getProperty("baseUrl"));
+        getDriver().get(CONFIG.getPropertyOrWarn("baseUrl"));
     }
 }

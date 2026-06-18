@@ -28,7 +28,7 @@ public final class DriverFactory {
     }
 
     public static WebDriver createDriver() {
-        boolean useGrid = Boolean.parseBoolean(CONFIG.getProperty("selenium.grid"));
+        boolean useGrid = Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.grid"));
         return useGrid ? createRemoteDriver() : createLocalDriver();
     }
 
@@ -67,22 +67,22 @@ public final class DriverFactory {
 
     private static void configureDriver(WebDriver driver) {
         driver.manage().timeouts().pageLoadTimeout(
-                Duration.ofSeconds(Integer.parseInt(CONFIG.getProperty("execution.pageLoadTimeout"))));
+                Duration.ofSeconds(Integer.parseInt(CONFIG.getPropertyOrWarn("execution.pageLoadTimeout"))));
         driver.manage().timeouts().implicitlyWait(
-                Duration.ofSeconds(Integer.parseInt(CONFIG.getProperty("execution.implicitlyWait"))));
+                Duration.ofSeconds(Integer.parseInt(CONFIG.getPropertyOrWarn("execution.implicitlyWait"))));
 
-        if (Boolean.parseBoolean(CONFIG.getProperty("selenium.maximizeWindow"))) {
+        if (Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.maximizeWindow"))) {
             driver.manage().window().maximize();
         } else {
             org.openqa.selenium.Dimension dimension = new org.openqa.selenium.Dimension(
-                    Integer.parseInt(CONFIG.getProperty("selenium.windowWidth")),
-                    Integer.parseInt(CONFIG.getProperty("selenium.windowHeight")));
+                    Integer.parseInt(CONFIG.getPropertyOrWarn("selenium.windowWidth")),
+                    Integer.parseInt(CONFIG.getPropertyOrWarn("selenium.windowHeight")));
             driver.manage().window().setSize(dimension);
         }
     }
 
     private static URL parseRemoteUrl() {
-        String hubUrl = CONFIG.getProperty("grid.hubUrl");
+        String hubUrl = CONFIG.getPropertyOrWarn("grid.hubUrl");
         try {
             return URI.create(hubUrl).toURL();
         } catch (MalformedURLException e) {

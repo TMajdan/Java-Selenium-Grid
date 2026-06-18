@@ -18,20 +18,20 @@ public final class SeleniumProperties {
      * Returns whether Selenium Grid mode is enabled.
      */
     public static boolean isGridMode() {
-        return Boolean.parseBoolean(CONFIG.getProperty(GRID));
+        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn(GRID));
     }
 
     /**
      * Returns whether debug mode is enabled.
      */
     public static boolean isDebugMode() {
-        return Boolean.parseBoolean(CONFIG.getProperty(DEBUG));
+        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn(DEBUG));
     }
 
     /**
      * Returns whether headless mode is enabled.
      */
     public static boolean isHeadlessMode() {
-        return Boolean.parseBoolean(CONFIG.getProperty(HEADLESS));
+        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn(HEADLESS));
     }
 }

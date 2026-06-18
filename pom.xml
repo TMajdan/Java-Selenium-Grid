@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>selenium-grid-framework</artifactId>
+    <artifactId>app-2-you-banking</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Selenium Grid Automation Framework</name>
-    <description>Enterprise-grade UI Automation Framework with Selenium Grid, TestNG, Allure</description>
+    <name>App2You</name>
+    <description>App2You Automation Framework with Selenium Grid, TestNG, Allure</description>
 
     <properties>
         <!-- Java -->
@@ -19,7 +19,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Dependencies versions -->
+        <!-- Dependencies -->
         <selenium.version>4.30.0</selenium.version>
         <testng.version>7.11.0</testng.version>
         <allure-testng.version>2.29.1</allure-testng.version>
@@ -36,8 +36,12 @@
         <extentreports.version>5.1.2</extentreports.version>
         <commons-io.version>2.18.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
+        <orgjson.version>20231013</orgjson.version>
+        <gson.version>2.11.0</gson.version>
+        <jsonpath.version>2.9.0</jsonpath.version>
+        <simpleyaml.version>1.8.3</simpleyaml.version>
 
-        <!-- Plugin versions -->
+        <!-- Plugins -->
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <allure-maven.version>2.14.0</allure-maven.version>
@@ -45,7 +49,15 @@
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -53,14 +65,16 @@
             <version>${selenium.version}</version>
         </dependency>
 
-        <!-- TestNG (compile scope - listeners are in main source) -->
+        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
         </dependency>
 
-        <!-- Allure TestNG Integration -->
+        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-testng -->
+        <!-- Allure TestNG -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
@@ -68,13 +82,15 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Allure Java Commons (compile scope - @Step used in main source) -->
+        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-java-commons -->
+        <!-- Allure Java Commons -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-java-commons</artifactId>
             <version>${allure-commons.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
         <!-- WebDriverManager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
@@ -82,6 +98,7 @@
             <version>${webdrivermanager.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
         <!-- SnakeYAML -->
         <dependency>
             <groupId>org.yaml</groupId>
@@ -89,6 +106,8 @@
             <version>${snakeyaml.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml -->
         <!-- Jackson Databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -101,6 +120,7 @@
             <version>${jackson-databind.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -109,6 +129,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
         <!-- AssertJ -->
         <dependency>
             <groupId>org.assertj</groupId>
@@ -117,6 +138,8 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <!-- SLF4J + Logback -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -129,7 +152,9 @@
             <version>${logback.version}</version>
         </dependency>
 
-        <!-- REST Assured (API layer readiness - compile scope for ApiClient in main source) -->
+        <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+        <!-- https://mvnrepository.com/artifact/io.rest-assured/json-path -->
+        <!-- REST Assured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -141,6 +166,7 @@
             <version>${rest-assured.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
         <!-- JavaFaker -->
         <dependency>
             <groupId>com.github.javafaker</groupId>
@@ -148,13 +174,15 @@
             <version>${javafaker.version}</version>
         </dependency>
 
-        <!-- ExtentReports (optional reporter) -->
+        <!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->
+        <!-- ExtentReports -->
         <dependency>
             <groupId>com.aventstack</groupId>
             <artifactId>extentreports</artifactId>
             <version>${extentreports.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <!-- Apache Commons IO -->
         <dependency>
             <groupId>commons-io</groupId>
@@ -162,11 +190,44 @@
             <version>${commons-io.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <!-- Apache Commons Lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <!-- org.json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${orgjson.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <!-- Gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
+        <!-- JsonPath -->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${jsonpath.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.Carleslc.Simple-YAML/Simple-Yaml -->
+        <!-- Simple YAML (via JitPack) -->
+        <dependency>
+            <groupId>com.github.Carleslc.Simple-YAML</groupId>
+            <artifactId>Simple-Yaml</artifactId>
+            <version>${simpleyaml.version}</version>
         </dependency>
     </dependencies>
 
@@ -259,45 +320,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven-jar-plugin.version}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                    </archive>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <!-- Environment profiles -->
-        <profile>
-            <id>qa</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <environment>qa</environment>
-            </properties>
-        </profile>
-        <profile>
-            <id>stage</id>
-            <properties>
-                <environment>stage</environment>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <environment>prod</environment>
-            </properties>
-        </profile>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <environment>dev</environment>
-            </properties>
-        </profile>
-    </profiles>
 </project>

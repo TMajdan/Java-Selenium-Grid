@@ -19,7 +19,7 @@ public final class ApiClient {
         RestAssured.reset();
 
         return new RequestSpecBuilder()
-                .setBaseUri(CONFIG.getProperty("apiBaseUrl"))
+                .setBaseUri(CONFIG.getPropertyOrWarn("apiBaseUrl"))
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .setRelaxedHTTPSValidation()

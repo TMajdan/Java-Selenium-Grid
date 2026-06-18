@@ -1,14 +1,15 @@
 package tests;
 
+import actions.BaseActions;
+import actions.CheckActions;
+import actions.ClickActions;
+import base.TestBase;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import base.TestBase;
-import data.TestDataProvider;
-import utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -36,6 +37,7 @@ public class GoogleSearchTest extends TestBase {
     private static final By FIRST_RESULT_TITLE = By.cssSelector("h3");
     private static final By SEARCH_RESULT_LINKS = By.cssSelector("div#search a[href^='http']");
     private static final By SUGGESTIONS_LIST = By.cssSelector("ul[role='listbox'] li");
+    private static final By COOKIE_ACCEPT_BUTTON = By.id("L2AGLb");
 
     @Test(description = "Verify Google homepage loads successfully")
     @Severity(SeverityLevel.BLOCKER)
@@ -43,7 +45,7 @@ public class GoogleSearchTest extends TestBase {
     @Description("Verify that the Google homepage loads with the correct title")
     public void testGoogleHomePageLoads() {
         getDriver().get(GOOGLE_URL);
-        WaitUtils.waitForPageLoad(getDriver());
+        BaseActions.waitForPageLoaded(getDriver());
 
         String pageTitle = getDriver().getTitle();
         assertThat(pageTitle)
@@ -57,12 +59,12 @@ public class GoogleSearchTest extends TestBase {
     @Description("Verify that searching for a keyword returns relevant results")
     public void testSearchWithKeyword() {
         getDriver().get(GOOGLE_URL);
-        WaitUtils.waitForPageLoad(getDriver());
+        BaseActions.waitForPageLoaded(getDriver());
         handleCookieConsent();
 
         performSearch("Selenium WebDriver");
 
-        WaitUtils.waitForElementsCount(getDriver(), SEARCH_RESULT_LINKS, 1);
+        CheckActions.waitForElementsCount(getDriver(), SEARCH_RESULT_LINKS, 1);
 
         List<WebElement> results = getDriver().findElements(SEARCH_RESULT_LINKS);
         assertThat(results)
@@ -86,12 +88,12 @@ public class GoogleSearchTest extends TestBase {
     // @Description("Verify that different search queries return relevant results")
     // public void testMultipleSearchQueries(String searchKeyword) {
     //     getDriver().get(GOOGLE_URL);
-    //     WaitUtils.waitForPageLoad(getDriver());
+    //     BaseActions.waitForPageLoaded(getDriver());
     //     handleCookieConsent();
 
     //     performSearch(searchKeyword);
 
-    //     WaitUtils.waitForVisible(getDriver(), RESULT_STATS);
+    //     CheckActions.waitForVisible(getDriver(), RESULT_STATS);
 
     //     String stats = getDriver().findElement(RESULT_STATS).getText();
     //     assertThat(stats)
@@ -105,13 +107,13 @@ public class GoogleSearchTest extends TestBase {
     // @Description("Verify that search suggestions appear when typing in the search box")
     // public void testSearchSuggestions() {
     //     getDriver().get(GOOGLE_URL);
-    //     WaitUtils.waitForPageLoad(getDriver());
+    //     BaseActions.waitForPageLoaded(getDriver());
     //     handleCookieConsent();
 
     //     WebElement searchBox = getDriver().findElement(SEARCH_INPUT);
     //     searchBox.sendKeys("Selenium");
 
-    //     List<WebElement> suggestionList = WaitUtils.waitForElementsCount(
+    //     List<WebElement> suggestionList = CheckActions.waitForElementsCount(
     //             getDriver(), SUGGESTIONS_LIST, 1);
     //     assertThat(suggestionList)
     //             .as("Search suggestions should appear")
@@ -124,7 +126,7 @@ public class GoogleSearchTest extends TestBase {
     // @Description("Verify that the URL changes after performing a search")
     // public void testSearchResultsUrl() {
     //     getDriver().get(GOOGLE_URL);
-    //     WaitUtils.waitForPageLoad(getDriver());
+    //     BaseActions.waitForPageLoaded(getDriver());
     //     handleCookieConsent();
 
     //     performSearch("Test Automation Framework");
@@ -141,30 +143,15 @@ public class GoogleSearchTest extends TestBase {
 
     private void handleCookieConsent() {
         try {
-            WaitUtils.waitForCondition(getDriver(), d -> {
-                try {
-                    List<WebElement> buttons = d.findElements(By.xpath(
-                            "//button//span[text()='Accept all']" +
-                            " | //button//span[text()='Zaakceptuj wszystko']" +
-                            " | //div[text()='Accept all']" +
-                            " | //button[contains(., 'Accept all')]"));
-                    if (!buttons.isEmpty()) {
-                        buttons.get(0).click();
-                        return true;
-                    }
-                    return false;
-                } catch (Exception e) {
-                    return false;
-                }
-            }, 3);
+            ClickActions.click(getDriver(), COOKIE_ACCEPT_BUTTON);
         } catch (Exception e) {
             // Cookie consent not present, continue
         }
     }
 
     private void performSearch(String query) {
-        WebElement searchBox = WaitUtils.waitForClickable(getDriver(), SEARCH_INPUT);
-        searchBox.click();
+        ClickActions.click(getDriver(), SEARCH_INPUT);
+        WebElement searchBox = getDriver().findElement(SEARCH_INPUT);
         searchBox.clear();
         searchBox.sendKeys(query);
         searchBox.sendKeys(Keys.ENTER);

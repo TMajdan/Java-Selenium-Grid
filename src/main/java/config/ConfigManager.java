@@ -3,7 +3,10 @@ package config;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
+import org.simpleyaml.configuration.file.YamlFile;
+
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -23,29 +26,50 @@ public class ConfigManager {
     private final Yaml yaml = new Yaml();
     private final HashMap<String, Object> config = new HashMap<>();
 
+    public ConfigManager(String filename) {
+        loadConfigYaml(filename);
+    }
+
     private static ConfigManager initConfig() {
         ConfigManager config = new ConfigManager(PROPERTIES_PATH + "BasicSettings.yaml");
-        String environment = config.getProperty("environment");
+        String environment = config.getPropertyOrWarn("environment");
         if (environment != null) {
             String envUpper = environment.toUpperCase();
-            config.loadFileSettings(PROPERTIES_PATH + "setting/" + String.format("%sSettings.yaml", envUpper));
-            config.loadFileSettings(PROPERTIES_PATH + "users/" + String.format("%sUsers.yaml", envUpper));
+            config.loadConfigYaml(PROPERTIES_PATH + "setting/" + String.format("%sSettings.yaml", envUpper));
+            config.loadConfigYaml(PROPERTIES_PATH + "users/" + String.format("%sUsers.yaml", envUpper));
         } else {
             log.warn("No 'environment' property found in BasicSettings.yaml");
         }
         return config;
     }
 
-    public ConfigManager(String filename) {
-        loadFileSettings(filename);
-    }
+    /**
+     * Loads a specified configuration file and merges it into the config map.
+     *
+     * @param configPath Path to the configuration file.
+     */
+    private void loadConfigYaml(String configPath) {
+        try {
+            YamlFile yamlFile = new YamlFile(configPath);
 
-    public void loadFileSettings(String fileName) {
-        try (InputStream stream = new FileInputStream(fileName)) {
-            updateMap(config, yaml.load(stream));
+            if (!yamlFile.exists()) {
+                throw new FileNotFoundException("Configuration file not found: " + configPath);
+            }
+            yamlFile.load();
+
+            // Parse via snakeyaml and merge into the config map
+            try (InputStream stream = new FileInputStream(configPath)) {
+                Object loaded = this.yaml.load(stream);
+                if (loaded instanceof Map) {
+                    //noinspection unchecked
+                    updateMap(this.config, (Map<String, Object>) loaded);
+                    //log.info("Loaded configuration from: {}", configPath);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            log.warn("Configuration file not found: {}", configPath);
         } catch (IOException e) {
-            log.warn("cannot load file {}", fileName);
-            throw new RuntimeException("Failed to load: " + fileName, e);
+            log.error("Error while loading configuration from: {}", configPath, e);
         }
     }
 
@@ -53,11 +77,32 @@ public class ConfigManager {
         sourceMap.forEach((key, sourceValue) -> {
             Object destValue = destMap.get(key);
             if (sourceValue instanceof Map && destValue instanceof Map) {
+                //noinspection unchecked
                 updateMap((Map<String, Object>) destValue, (Map<String, Object>) sourceValue);
             } else {
                 destMap.put(key, sourceValue);
             }
         });
+    }
+
+    public String getPropertyOrWarn(String propertyName) {
+        try {
+            String systemProperty = System.getProperty(propertyName);
+            String value;
+            if (systemProperty != null) {
+                value = systemProperty;
+            } else {
+                value = findProperty(config, propertyName);
+            }
+
+            if (value == null || value.isBlank()) {
+                System.err.printf("[YAML CONFIGURATION] Config key is empty: %s%n", propertyName);
+            }
+            return value;
+        } catch (Exception e) {
+            System.err.printf("[YAML CONFIGURATION] Config key not found: %s%n %s%n", propertyName, e.getMessage());
+            return null;
+        }
     }
 
     private String findProperty(Map<String, Object> config, String propertyName) {
@@ -84,15 +129,6 @@ public class ConfigManager {
             return (Map<String, Object>) value;
         } else {
             return new HashMap<>();
-        }
-    }
-
-    public String getProperty(String propertyName) {
-        String systemProperty = System.getProperty(propertyName);
-        if (systemProperty != null) {
-            return systemProperty;
-        } else {
-            return findProperty(config, propertyName);
         }
     }
 }
