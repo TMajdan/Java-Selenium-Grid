@@ -1,52 +1,28 @@
 package listeners;
 
 import lombok.extern.slf4j.Slf4j;
-import utils.screenshot.ScreenshotHolder;
-import utils.screenshot.ScreenshotUtils;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import utils.screenshot.ScreenshotUtils;
 
 import java.util.Optional;
 
 /**
  * Allure-specific test listener for enhanced reporting.
- * Handles attaching screenshots, page source, and logs to Allure reports.
- * Works alongside the TestListener for comprehensive reporting.
- * <p>
- * Screenshots are captured in TestBase.tearDown() before the driver is quit,
- * stored in ScreenshotHolder (ThreadLocal), and attached here via Allure API.
+ * Handles attaching test logs to Allure reports.
+ * Screenshots are captured directly in TestBase.tearDown() via ScreenshotUtils.captureAndAttach().
  */
 @Slf4j
 public class AllureListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
-        attachScreenshotsFromHolder(result);
         attachTestLog(result);
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        attachScreenshotsFromHolder(result);
         attachTestLog(result);
-    }
-
-    /**
-     * Attaches the screenshot (stored in ScreenshotHolder by TestBase.tearDown)
-     * and page source to the Allure report.
-     */
-    private void attachScreenshotsFromHolder(ITestResult result) {
-        try {
-            byte[] screenshotBytes = ScreenshotHolder.get();
-            if (screenshotBytes != null && screenshotBytes.length > 0) {
-                ScreenshotUtils.attachScreenshotToAllure(
-                        result.getName() + " - Failure Screenshot", screenshotBytes);
-                log.debug("Attached screenshot to Allure for: {}", result.getName());
-            }
-            ScreenshotHolder.clear();
-        } catch (Exception e) {
-            log.warn("Failed to attach screenshot to Allure", e);
-        }
     }
 
     /**
@@ -65,6 +41,6 @@ public class AllureListener implements ITestListener {
             logBuilder.append("Message: ").append(t.getMessage()).append("\n");
         });
 
-        ScreenshotUtils.attachLogToAllure(logBuilder.toString());
+        ScreenshotUtils.attachLog(logBuilder.toString());
     }
 }

@@ -1,3 +1,63 @@
-baseUrl: "https://zt004.example.com"
-apiBaseUrl: "https://api.zt004.example.com"
-dbConnection: "jdbc:postgresql://zt004-db:5432/app"
+idm:
+  base_url:
+  login:
+  password:
+
+easy_admin:
+  base_url:
+
+smebanking:
+  change_company_data_api:
+    base_url:
+  certificates_api:
+    base_url:
+  accounts_api:
+    base_url:
+
+decision_engine:
+  sms_token_api:
+    base_url:
+  jwt_token:
+    client_secret:
+    client_id:
+
+mobywatel:
+  adapter_api:
+    base_url:
+  idhub_web_component_url:
+
+aoc:
+  base_url:
+
+ceke:
+  base_url:
+
+cis:
+  base_url:
+  x_request_system_id:
+  corp_id:
+
+application_jwt_token:
+  base_url:
+  endpoint:
+
+ced_jwt_token:
+  client_secret:
+  client_id:
+
+accounts_jwt_token:
+  client_secret:
+  client_id:
+
+user_jwt_token:
+  base_url:
+
+token_v2:
+  base_url:
+
+tosia:
+  base_url:
+
+oneapp:
+  android_path:
+  ios_path:

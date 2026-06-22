@@ -1,12 +1,12 @@
 package pages.actions;
 
-import config.TimeoutConfig;
+import io.qameta.allure.Allure;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import utils.wait.WaitUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import utils.wait.WaitUtils;
 
 import java.time.Duration;
 
@@ -16,23 +16,20 @@ import java.time.Duration;
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("null")
 public final class BaseActions {
-
-    // ── Wait delegates (single source of truth: WaitUtils) ──
-
     public static void waitForPageLoaded(WebDriver driver) {
-        WaitUtils.waitForPageLoad(driver);
+        Allure.step("Wait for page to fully load", () -> WaitUtils.waitForPageLoad(driver));
     }
 
     public static <T> T waitForCondition(WebDriver driver, ExpectedCondition<T> condition) {
-        return WaitUtils.waitForCondition(driver, condition);
+        return Allure.step("Wait for custom condition", () -> WaitUtils.waitForCondition(driver, condition));
     }
 
     public static <T> T waitForCondition(WebDriver driver, ExpectedCondition<T> condition, int timeoutSeconds) {
-        return WaitUtils.waitForCondition(driver, condition, timeoutSeconds);
+        return Allure.step("Wait for custom condition (" + timeoutSeconds + "s timeout)", () ->
+                WaitUtils.waitForCondition(driver, condition, timeoutSeconds));
     }
-
-    // ── Browser-level operations ──
 
     /** @deprecated Use {@code driver.manage().timeouts().implicitlyWait(Duration.ZERO)} directly.
      *  Implicit waits should be set to 0 when using explicit waits. */
@@ -43,20 +40,24 @@ public final class BaseActions {
     }
 
     public static void switchToNewTab(WebDriver driver) {
-        String originalWindow = driver.getWindowHandle();
-        for (String windowHandle : driver.getWindowHandles()) {
-            if (!originalWindow.equals(windowHandle)) {
-                driver.switchTo().window(windowHandle);
-                log.debug("Switched to new tab: {}", windowHandle);
-                return;
+        Allure.step("Switch to new tab", () -> {
+            String originalWindow = driver.getWindowHandle();
+            for (String windowHandle : driver.getWindowHandles()) {
+                if (!originalWindow.equals(windowHandle)) {
+                    driver.switchTo().window(windowHandle);
+                    log.debug("Switched to new tab: {}", windowHandle);
+                    return;
+                }
             }
-        }
-        log.warn("No new tab found");
+            log.warn("No new tab found");
+        });
     }
 
     public static void refreshPage(WebDriver driver) {
         log.debug("Refreshing page");
-        driver.navigate().refresh();
-        WaitUtils.waitForPageLoad(driver);
+        Allure.step("Refresh page", () -> {
+            driver.navigate().refresh();
+            WaitUtils.waitForPageLoad(driver);
+        });
     }
 }

@@ -1,101 +1,75 @@
 package base;
 
+import config.TestProperties;
+import driver.BaseDriver;
 import lombok.extern.slf4j.Slf4j;
-import static config.ConfigManager.CONFIG;
-import driver.DriverFactory;
-import driver.DriverManager;
-import config.SeleniumProperties;
-import utils.file.FileUtils;
-import utils.screenshot.ScreenshotHolder;
-import utils.screenshot.ScreenshotUtils;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import utils.screenshot.ScreenshotUtils;
 
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 /**
  * Base class for all test classes.
  * Provides setup/teardown lifecycle, thread-safe driver management,
- * screenshot capture on failure, and reporting configuration.
+ * and reporting configuration.
  */
 @Slf4j
+@SuppressWarnings("null")
 public abstract class TestBase {
-
-    protected WebDriver driver;
 
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite() {
-        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        deleteAllureResultsDirectory();
+        log.info("=======================================");
         log.info("  Environment: {}  |  Grid: {}  |  Debug: {}  |  Headless: {}  |  Threads: {}",
-                CONFIG.getPropertyOrWarn("environment"),
-                CONFIG.getPropertyOrWarn("selenium.grid"),
-                CONFIG.getPropertyOrWarn("selenium.debug"),
-                SeleniumProperties.isHeadlessMode(),
-                CONFIG.getPropertyOrWarn("execution.threadCount"));
-        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-        // Create required directories
-        FileUtils.createDirectoryIfNotExists(CONFIG.getPropertyOrWarn("paths.screenshotDir"));
-        FileUtils.createDirectoryIfNotExists(CONFIG.getPropertyOrWarn("paths.downloadDir"));
-        FileUtils.createDirectoryIfNotExists(CONFIG.getPropertyOrWarn("paths.allureResultsDir"));
+                TestProperties.getEnvironment(),
+                TestProperties.isGridMode(),
+                TestProperties.isDebugMode(),
+                TestProperties.isHeadlessMode(),
+                TestProperties.getThreadCount());
+        log.info("=======================================");
     }
 
     @BeforeMethod(alwaysRun = true)
     public void setUp(Method method) {
-        // Create driver and store in ThreadLocal
-        WebDriver threadDriver = DriverFactory.createDriver();
-        DriverManager.setDriver(threadDriver);
-        this.driver = threadDriver;
+        BaseDriver.getDriver();
     }
 
     @AfterMethod(alwaysRun = true)
-    public void tearDown(ITestResult result, Method method) {
-        // Handle screenshot on failure
-        if (!result.isSuccess() && Boolean.parseBoolean(CONFIG.getPropertyOrWarn("execution.screenshotOnFailure"))) {
-            log.warn("❌ {} – FAILED, screenshot captured", method.getName());
-            try {
-                // Verify driver session is still valid
-                driver.getTitle();
-                byte[] screenshotBytes = ScreenshotUtils.captureScreenshotAsBytes(driver);
-                ScreenshotHolder.set(screenshotBytes);
-                ScreenshotUtils.attachScreenshotToAllure(method.getName() + " - Failure Screenshot", screenshotBytes);
-                ScreenshotUtils.captureScreenshot(driver, method.getName());
-            } catch (Exception e) {
-                log.warn("  Could not capture screenshot – session invalid: {}", e.getMessage());
-                // Still store empty marker so AllureListener knows a failure happened
-                ScreenshotHolder.set(new byte[0]);
+    public void tearDown(ITestResult result) {
+        Optional<WebDriver> optDriver = BaseDriver.getExistingDriver();
+        if (!result.isSuccess()) {
+            if (optDriver.isPresent()) {
+                log.warn("  [FAIL] {} - screenshot captured", result.getName());
+                ScreenshotUtils.attachScreenshot(result.getName() + " - Failure");
+            } else {
+                log.warn("  [FAIL] {} - no driver available for screenshot", result.getName());
             }
         }
-
-        // Quit driver
-        DriverManager.quitDriver();
+        BaseDriver.quitDriver();
     }
 
-    @AfterSuite(alwaysRun = true)
-    public void afterSuite() {
-        if (Boolean.parseBoolean(CONFIG.getPropertyOrWarn("execution.screenshotOnFailure"))) {
-            ScreenshotUtils.cleanupOldScreenshots(Integer.parseInt(CONFIG.getPropertyOrWarn("execution.maxScreenshotHistory")));
-        }
-
-        log.info("  Clean-up complete");
-        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    }
-
-    /**
-     * Returns the current WebDriver instance.
-     */
     public WebDriver getDriver() {
-        return DriverManager.getDriver();
+        return BaseDriver.getDriver();
     }
 
-    /**
-     * Navigates to the base URL and waits for the page to load.
-     */
     public void navigateToBaseUrl() {
-        getDriver().get(CONFIG.getPropertyOrWarn("baseUrl"));
+        getDriver().get(TestProperties.getBaseUrl());
+    }
+
+    private static void deleteAllureResultsDirectory() {
+        try {
+            Files.walk(Paths.get("target/allure-results"))
+                    .sorted((a, b) -> b.compareTo(a))
+                    .forEach(p -> p.toFile().delete());
+        } catch (Exception ignored) {
+        }
     }
 }

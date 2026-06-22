@@ -1,9 +1,8 @@
 package driver;
 
+import config.TestProperties;
 import config.TimeoutConfig;
 import lombok.extern.slf4j.Slf4j;
-import static config.ConfigManager.CONFIG;
-import exception.DriverInitializationException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,23 +12,64 @@ import org.openqa.selenium.support.events.EventFiringDecorator;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.time.Duration;
+import java.util.Optional;
 
-/**
- * Factory for creating WebDriver instances.
- * Uses RemoteWebDriver when selenium.grid=true, local ChromeDriver otherwise.
- */
 @Slf4j
-public final class DriverFactory {
+@SuppressWarnings("null")
+public final class BaseDriver {
 
+    private static final ThreadLocal<WebDriver> DRIVER_THREAD_LOCAL = new ThreadLocal<>();
     private static final DriverListener LISTENER = new DriverListener();
 
-    private DriverFactory() {
+    private BaseDriver() {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static WebDriver createDriver() {
-        boolean useGrid = Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.grid"));
+    public static WebDriver getDriver() {
+        WebDriver driver = DRIVER_THREAD_LOCAL.get();
+        if (driver == null) {
+            log.info("No driver found for current thread, creating new instance");
+            driver = createDriver();
+            setDriver(driver);
+        }
+        return driver;
+    }
+
+    public static void setDriver(WebDriver driver) {
+        DRIVER_THREAD_LOCAL.set(driver);
+    }
+
+    public static void quitDriver() {
+        WebDriver driver = DRIVER_THREAD_LOCAL.get();
+        if (driver != null) {
+            try {
+                driver.quit();
+                log.debug("WebDriver quit successfully for thread: {}", Thread.currentThread().getName());
+            } catch (Exception e) {
+                log.warn("Error while quitting WebDriver", e);
+            } finally {
+                DRIVER_THREAD_LOCAL.remove();
+            }
+        }
+    }
+
+    public static Optional<WebDriver> getExistingDriver() {
+        return Optional.ofNullable(DRIVER_THREAD_LOCAL.get());
+    }
+
+    public static void closeWindow() {
+        WebDriver driver = DRIVER_THREAD_LOCAL.get();
+        if (driver != null) {
+            try {
+                driver.close();
+            } catch (Exception e) {
+                log.warn("Error while closing browser window", e);
+            }
+        }
+    }
+
+    private static WebDriver createDriver() {
+        boolean useGrid = TestProperties.isGridMode();
         return useGrid ? createRemoteDriver() : createLocalDriver();
     }
 
@@ -55,7 +95,7 @@ public final class DriverFactory {
         try {
             originalDriver = new RemoteWebDriver(remoteUrl, options);
         } catch (Exception e) {
-            throw new DriverInitializationException("Failed to create RemoteWebDriver at: " + remoteUrl, e);
+            throw new RuntimeException("Failed to create RemoteWebDriver at: " + remoteUrl, e);
         }
 
         EventFiringDecorator<WebDriver> decorator = new EventFiringDecorator<>(LISTENER);
@@ -67,27 +107,24 @@ public final class DriverFactory {
     }
 
     private static void configureDriver(WebDriver driver) {
-        // Never mix implicit and explicit waits – set implicitlyWait to 0.
-        // All waiting is handled by WaitUtils / BaseActions using explicit waits only.
-        driver.manage().timeouts().implicitlyWait(Duration.ZERO);
         driver.manage().timeouts().pageLoadTimeout(TimeoutConfig.getPageLoadDuration());
 
-        if (Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.maximizeWindow"))) {
+        if (TestProperties.isMaximizeWindow()) {
             driver.manage().window().maximize();
         } else {
             org.openqa.selenium.Dimension dimension = new org.openqa.selenium.Dimension(
-                    Integer.parseInt(CONFIG.getPropertyOrWarn("selenium.windowWidth")),
-                    Integer.parseInt(CONFIG.getPropertyOrWarn("selenium.windowHeight")));
+                    TestProperties.getWindowWidth(),
+                    TestProperties.getWindowHeight());
             driver.manage().window().setSize(dimension);
         }
     }
 
     private static URL parseRemoteUrl() {
-        String hubUrl = CONFIG.getPropertyOrWarn("grid.hubUrl");
+        String hubUrl = TestProperties.getHubUrl();
         try {
             return URI.create(hubUrl).toURL();
         } catch (MalformedURLException e) {
-            throw new DriverInitializationException("Invalid remote URL: " + hubUrl, e);
+            throw new RuntimeException("Invalid remote URL: " + hubUrl, e);
         }
     }
 }

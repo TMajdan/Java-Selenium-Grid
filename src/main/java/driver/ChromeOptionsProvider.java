@@ -37,7 +37,6 @@ public final class ChromeOptionsProvider {
 
         options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, false);
         options.setCapability(CapabilityType.PAGE_LOAD_STRATEGY, org.openqa.selenium.PageLoadStrategy.NORMAL);
-
         return options;
     }
 }

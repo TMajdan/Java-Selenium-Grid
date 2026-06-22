@@ -11,7 +11,6 @@ import org.openqa.selenium.By;
 @Slf4j
 public class LoginPage extends BasePage {
 
-    // Locators
     private static final By USERNAME_INPUT = By.id("user-name");
     private static final By PASSWORD_INPUT = By.id("password");
     private static final By LOGIN_BUTTON = By.id("login-button");

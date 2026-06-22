@@ -1,10 +1,10 @@
 package utils.db;
 
 import database.DatabaseConnection;
-import utils.Utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import utils.Utils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

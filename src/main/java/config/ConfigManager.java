@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Configuration manager that loads YAML files from the classpath,
@@ -23,7 +24,7 @@ public class ConfigManager {
     public static final ConfigManager CONFIG = initConfig();
 
     private final Yaml yaml = new Yaml();
-    private final HashMap<String, Object> config = new HashMap<>();
+    private final Map<String, Object> config = new ConcurrentHashMap<>();
 
     public ConfigManager(String classpathResource) {
         loadConfigYaml(classpathResource);
@@ -65,11 +66,11 @@ public class ConfigManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void updateMap(Map<String, Object> destMap, Map<String, Object> sourceMap) {
         sourceMap.forEach((key, sourceValue) -> {
             Object destValue = destMap.get(key);
             if (sourceValue instanceof Map && destValue instanceof Map) {
-                //noinspection unchecked
                 updateMap((Map<String, Object>) destValue, (Map<String, Object>) sourceValue);
             } else {
                 destMap.put(key, sourceValue);
@@ -79,20 +80,17 @@ public class ConfigManager {
 
     public String getPropertyOrWarn(String propertyName) {
         try {
-            // 1. System property (highest priority)
             String systemProperty = System.getProperty(propertyName);
             if (systemProperty != null && !systemProperty.isBlank()) {
                 return systemProperty;
             }
 
-            // 2. Environment variable (second priority – for secrets)
             String envKey = propertyName.replace('.', '_').toUpperCase();
             String envValue = System.getenv(envKey);
             if (envValue != null && !envValue.isBlank()) {
                 return envValue;
             }
 
-            // 3. YAML config (lowest priority)
             String value = findProperty(config, propertyName);
             if (value == null || value.isBlank()) {
                 System.err.printf("[YAML CONFIGURATION] Config key is empty: %s%n", propertyName);

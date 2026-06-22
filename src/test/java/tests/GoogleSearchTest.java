@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Epic("Search")
 @Feature("Google Search")
 @Test(groups = {"google", "search", "smoke"})
+@SuppressWarnings("null")
 public class GoogleSearchTest extends TestBase {
 
     @Test(description = "Verify Google homepage loads successfully")

@@ -1,18 +1,18 @@
 package pages;
 
+import config.TestProperties;
+import driver.BaseDriver;
+import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import pages.actions.BaseActions;
 import pages.actions.BrowserActions;
 import pages.actions.CheckActions;
 import pages.actions.ClickActions;
 import pages.actions.GetActions;
 import pages.actions.SendActions;
-import io.qameta.allure.Step;
-import lombok.extern.slf4j.Slf4j;
-import static config.ConfigManager.CONFIG;
-import driver.DriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
@@ -24,12 +24,13 @@ import java.util.List;
  * All methods are designed to be thread-safe for parallel execution.
  */
 @Slf4j
+@SuppressWarnings("null")
 public abstract class BasePage {
 
     protected final WebDriver driver;
 
     protected BasePage() {
-        this.driver = DriverManager.getDriver();
+        this.driver = BaseDriver.getDriver();
     }
 
     protected BasePage(WebDriver driver) {
@@ -43,7 +44,7 @@ public abstract class BasePage {
 
     @Step("Navigate to base URL")
     public void navigateToBaseUrl() {
-        String baseUrl = CONFIG.getPropertyOrWarn("baseUrl");
+        String baseUrl = TestProperties.getBaseUrl();
         navigateTo(baseUrl);
     }
 

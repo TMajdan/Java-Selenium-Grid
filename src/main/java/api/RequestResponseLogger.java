@@ -22,13 +22,10 @@ import java.util.Optional;
 @Slf4j
 public class RequestResponseLogger implements Filter {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT);
+    private static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     @Override
-    public Response filter(FilterableRequestSpecification requestSpec,
-                           FilterableResponseSpecification responseSpec,
-                           FilterContext filterContext) {
+    public Response filter(FilterableRequestSpecification requestSpec, FilterableResponseSpecification responseSpec, FilterContext filterContext) {
         String requestLog = buildRequestLog(requestSpec);
         log.debug(requestLog);
         Allure.addAttachment("API Request", "text/plain", requestLog);

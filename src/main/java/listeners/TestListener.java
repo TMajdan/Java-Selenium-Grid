@@ -39,7 +39,7 @@ public class TestListener implements ITestListener {
     @Override
     public void onTestSuccess(ITestResult result) {
         long ms = result.getEndMillis() - result.getStartMillis();
-        log.info("  ✅ {}.{} ({}ms)",
+        log.info("  [PASS] {}.{} ({}ms)",
                 result.getTestClass().getRealClass().getSimpleName(),
                 result.getMethod().getMethodName(),
                 ms);
@@ -48,7 +48,7 @@ public class TestListener implements ITestListener {
     @Override
     public void onTestFailure(ITestResult result) {
         long ms = result.getEndMillis() - result.getStartMillis();
-        log.error("  ❌ {}.{} ({}ms)",
+        log.error("  [FAIL] {}.{} ({}ms)",
                 result.getTestClass().getRealClass().getSimpleName(),
                 result.getMethod().getMethodName(),
                 ms);
@@ -56,7 +56,7 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        log.warn("  [-] {}.{}",
+        log.warn("  [SKIP] {}.{}",
                 result.getTestClass().getRealClass().getSimpleName(),
                 result.getMethod().getMethodName());
     }

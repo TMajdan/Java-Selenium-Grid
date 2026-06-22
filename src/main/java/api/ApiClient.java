@@ -1,11 +1,11 @@
 package api;
 
+import config.TestProperties;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import static config.ConfigManager.CONFIG;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ApiClient {
@@ -17,7 +17,7 @@ public final class ApiClient {
      */
     public static RequestSpecification withBaseSpec() {
         return new RequestSpecBuilder()
-                .setBaseUri(CONFIG.getPropertyOrWarn("apiBaseUrl"))
+                .setBaseUri(TestProperties.getApiBaseUrl())
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .setRelaxedHTTPSValidation()
@@ -52,7 +52,6 @@ public final class ApiClient {
      * Creates a RequestSpecification with bearer token authentication.
      */
     public static RequestSpecification withBearerToken(String token) {
-        return withBaseSpec()
-                .header("Authorization", "Bearer " + token);
+        return withBaseSpec().header("Authorization", "Bearer " + token);
     }
 }

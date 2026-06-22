@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 @Slf4j
 public class RetryListener implements IAnnotationTransformer {
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @Override
     public void transform(ITestAnnotation annotation, Class testClass,
                           Constructor testConstructor, Method testMethod) {

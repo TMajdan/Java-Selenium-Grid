@@ -1,10 +1,10 @@
 package database;
 
-import utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import utils.Utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
