@@ -122,7 +122,7 @@ public class Utils {
             return countJsonFields(response.extract().jsonPath().get());
         } else {
             // Plain text or other content types are considered as a single field
-            log.info("verifyNumberOfResponseFields() received non-JSON response (content-type: {}) expectedNumberOfFields = 1", contentType);
+            log.debug("verifyNumberOfResponseFields() received non-JSON response (content-type: {}) expectedNumberOfFields = 1", contentType);
             return 1;
         }
     }

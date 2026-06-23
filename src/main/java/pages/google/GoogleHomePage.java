@@ -1,12 +1,14 @@
-package pages;
+package pages.google;
 
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import pages.BasePage;
 
 import java.util.List;
+
+import static pages.google.GoogleHomePageLocators.*;
 
 /**
  * Page Object representing the Google homepage.
@@ -14,20 +16,13 @@ import java.util.List;
 @Slf4j
 public class GoogleHomePage extends BasePage {
 
-    private static final String GOOGLE_URL = "https://www.google.com";
-
-    // Locators
-    private static final By SEARCH_INPUT = By.name("q");
-    private static final By COOKIE_ACCEPT_BUTTON = By.id("L2AGLb");
-    private static final By SUGGESTIONS_LIST = By.cssSelector("ul[role='listbox'] li");
-
     /**
      * Opens the Google homepage.
      */
     @Step("Open Google homepage")
     public GoogleHomePage open() {
         log.info("Opening Google homepage");
-        navigateTo(GOOGLE_URL);
+        navigateTo(GoogleHomePageLocators.GOOGLE_URL);
         waitForPageToLoad();
         return this;
     }
@@ -43,7 +38,7 @@ public class GoogleHomePage extends BasePage {
         log.info("Searching for: {}", query);
         handleCookieConsent();
         type(SEARCH_INPUT, query);
-        findElement(SEARCH_INPUT).sendKeys(Keys.ENTER);
+        sendKeys(SEARCH_INPUT, Keys.ENTER);
         return new GoogleResultsPage();
     }
 

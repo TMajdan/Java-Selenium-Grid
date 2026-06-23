@@ -1,22 +1,19 @@
-package pages;
+package pages.google;
 
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import pages.BasePage;
 
 import java.util.List;
+
+import static pages.google.GoogleResultsPageLocators.*;
 
 /**
  * Page Object representing the Google search results page.
  */
 @Slf4j
 public class GoogleResultsPage extends BasePage {
-
-    // Locators
-    private static final By RESULT_STATS = By.id("result-stats");
-    private static final By FIRST_RESULT_TITLE = By.cssSelector("h3");
-    private static final By SEARCH_RESULT_LINKS = By.cssSelector("div#search a[href^='http']");
 
     /**
      * Gets the number of search result links.

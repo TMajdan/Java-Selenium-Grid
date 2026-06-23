@@ -5,29 +5,23 @@ import lombok.NoArgsConstructor;
 
 import java.time.Duration;
 
-/**
- * Centralized timeout configuration for all WebDriver wait operations.
- * Uses lazy initialization with double-checked locking for thread safety.
- * <p>
- * This is the SINGLE SOURCE OF TRUTH for timeout values.
- * Both WaitUtils and BaseActions delegate to this class.
- */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TimeoutConfig {
 
-    private static volatile Integer defaultTimeout;
-    private static volatile Integer pollingInterval;
-    private static volatile Integer pageLoadTimeout;
+    private static class DefaultTimeoutHolder {
+        static final int VALUE = SeleniumProperties.getDefaultTimeout();
+    }
+
+    private static class PollingIntervalHolder {
+        static final int VALUE = SeleniumProperties.getPollingInterval();
+    }
+
+    private static class PageLoadTimeoutHolder {
+        static final int VALUE = SeleniumProperties.getPageLoadTimeout();
+    }
 
     public static int getDefaultTimeout() {
-        if (defaultTimeout == null) {
-            synchronized (TimeoutConfig.class) {
-                if (defaultTimeout == null) {
-                    defaultTimeout = TestProperties.getDefaultTimeout();
-                }
-            }
-        }
-        return defaultTimeout;
+        return DefaultTimeoutHolder.VALUE;
     }
 
     public static Duration getDefaultDuration() {
@@ -35,14 +29,7 @@ public final class TimeoutConfig {
     }
 
     public static int getPollingInterval() {
-        if (pollingInterval == null) {
-            synchronized (TimeoutConfig.class) {
-                if (pollingInterval == null) {
-                    pollingInterval = TestProperties.getPollingInterval();
-                }
-            }
-        }
-        return pollingInterval;
+        return PollingIntervalHolder.VALUE;
     }
 
     public static Duration getPollingDuration() {
@@ -50,17 +37,10 @@ public final class TimeoutConfig {
     }
 
     public static int getPageLoadTimeout() {
-        if (pageLoadTimeout == null) {
-            synchronized (TimeoutConfig.class) {
-                if (pageLoadTimeout == null) {
-                    pageLoadTimeout = TestProperties.getPageLoadTimeout();
-                }
-            }
-        }
-        return pageLoadTimeout;
+        return PageLoadTimeoutHolder.VALUE;
     }
 
     public static Duration getPageLoadDuration() {
         return Duration.ofSeconds(getPageLoadTimeout());
-    }
+}
 }

@@ -55,14 +55,14 @@ public class DatabaseConnection {
             PreparedStatement ps = null;
 
             try {
-                log.info("Query attempt {}/{}, timeout set to {}s: {}", attempt, maxRetries, timeoutSeconds, query);
+                log.debug("Query attempt {}/{}, timeout set to {}s: {}", attempt, maxRetries, timeoutSeconds, query);
 
                 ps = connection.prepareStatement(query);
                 ps.setQueryTimeout(timeoutSeconds);
                 int rowsAffected = ps.executeUpdate();
                 String formattedQueryDuration = calculateQueryDuration(queryStartTime);
 
-                log.info("Successfully executed query on attempt {} -> rows affected: {}, time: {}s", attempt, rowsAffected, formattedQueryDuration);
+                log.debug("Successfully executed query on attempt {} -> rows affected: {}, time: {}s", attempt, rowsAffected, formattedQueryDuration);
                 return;
 
             } catch (SQLException e) {
@@ -92,7 +92,7 @@ public class DatabaseConnection {
             ResultSet resultSet = statement.executeQuery(query);
             String formattedQueryDuration = calculateQueryDuration(queryStartTime);
 
-            log.info("Successfully executed query: {}, execution time: {}s", query, formattedQueryDuration);
+            log.debug("Successfully executed query: {}, execution time: {}s", query, formattedQueryDuration);
             return resultSet;
 
         } catch (SQLException e) {

@@ -1,4 +1,4 @@
-package pages.actions;
+package actions;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
@@ -15,7 +15,8 @@ import utils.wait.WaitUtils;
 import java.util.List;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor()
+@SuppressWarnings("null")
 public final class CheckActions {
 
     public static boolean isElementDisplayed(WebDriver driver, By locator) {

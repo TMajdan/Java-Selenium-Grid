@@ -24,7 +24,7 @@ public final class ScreenshotUtils {
      */
     public static void attachScreenshot(String stepName) {
         try {
-            byte[] screenshot = ((TakesScreenshot) BaseDriver.getDriver()).getScreenshotAs(OutputType.BYTES);
+            byte[] screenshot = ((TakesScreenshot) BaseDriver.getWebDriver()).getScreenshotAs(OutputType.BYTES);
             Allure.addAttachment(stepName + ".png", new ByteArrayInputStream(screenshot));
         } catch (Exception e) {
             log.error("Failed to capture screenshot", e);

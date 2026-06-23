@@ -1,6 +1,6 @@
 package api;
 
-import config.TestProperties;
+import config.SeleniumProperties;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
@@ -17,7 +17,7 @@ public final class ApiClient {
      */
     public static RequestSpecification withBaseSpec() {
         return new RequestSpecBuilder()
-                .setBaseUri(TestProperties.getApiBaseUrl())
+                .setBaseUri(SeleniumProperties.getApiBaseUrl())
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .setRelaxedHTTPSValidation()

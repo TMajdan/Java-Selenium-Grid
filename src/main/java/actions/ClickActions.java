@@ -1,18 +1,18 @@
-package pages.actions;
+package actions;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import utils.wait.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import utils.wait.WaitUtils;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor()
 @SuppressWarnings("null")
 public final class ClickActions {
 
@@ -59,7 +59,6 @@ public final class ClickActions {
             new Actions(driver).moveToElement(element).perform();
         });
     }
-
 
     public static WebElement waitForClickable(WebDriver driver, By locator) {
         log.debug("Waiting for element to be clickable: {}", locator);

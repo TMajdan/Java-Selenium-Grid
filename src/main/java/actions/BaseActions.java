@@ -1,4 +1,4 @@
-package pages.actions;
+package actions;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
@@ -15,7 +15,7 @@ import java.time.Duration;
  * All wait operations are delegated to {@link WaitUtils} – the single source of truth.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor()
 @SuppressWarnings("null")
 public final class BaseActions {
     public static void waitForPageLoaded(WebDriver driver) {

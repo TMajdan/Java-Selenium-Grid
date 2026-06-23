@@ -2,9 +2,6 @@ package config;
 
 import static config.ConfigManager.CONFIG;
 
-/**
- * Typed accessors for ZT004 environment-specific configuration properties.
- */
 public final class TestProperties {
 
     private static final String ENVIRONMENT = "environment";
@@ -219,61 +216,5 @@ public final class TestProperties {
 
     public static String getOneappIosPath() {
         return CONFIG.getPropertyOrWarn(ONEAPP_IOS_PATH);
-    }
-
-    // ── Selenium ──
-
-    public static boolean isGridMode() {
-        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.grid"));
-    }
-
-    public static boolean isDebugMode() {
-        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.debug"));
-    }
-
-    public static boolean isHeadlessMode() {
-        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.headless"));
-    }
-
-    public static boolean isMaximizeWindow() {
-        return Boolean.parseBoolean(CONFIG.getPropertyOrWarn("selenium.maximizeWindow"));
-    }
-
-    public static int getWindowWidth() {
-        return Integer.parseInt(CONFIG.getPropertyOrWarn("selenium.windowWidth"));
-    }
-
-    public static int getWindowHeight() {
-        return Integer.parseInt(CONFIG.getPropertyOrWarn("selenium.windowHeight"));
-    }
-
-    // ── Execution ──
-
-    public static int getDefaultTimeout() {
-        return Integer.parseInt(CONFIG.getPropertyOrWarn("execution.timeout"));
-    }
-
-    public static int getPollingInterval() {
-        return Integer.parseInt(CONFIG.getPropertyOrWarn("execution.pollingInterval"));
-    }
-
-    public static int getPageLoadTimeout() {
-        return Integer.parseInt(CONFIG.getPropertyOrWarn("execution.pageLoadTimeout"));
-    }
-
-    public static int getThreadCount() {
-        return Integer.parseInt(CONFIG.getPropertyOrWarn("execution.threadCount"));
-    }
-
-    // ── Grid ──
-
-    public static String getHubUrl() {
-        return CONFIG.getPropertyOrWarn("grid.hubUrl");
-    }
-
-    // ── API ──
-
-    public static String getApiBaseUrl() {
-        return CONFIG.getPropertyOrWarn("apiBaseUrl");
     }
 }

@@ -1,4 +1,4 @@
-package pages.actions;
+package actions;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
@@ -13,7 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import utils.wait.WaitUtils;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor()
 @SuppressWarnings("null")
 public final class BrowserActions {
 
@@ -56,8 +56,7 @@ public final class BrowserActions {
 
     public static void scrollIntoView(WebDriver driver, WebElement element) {
         Allure.step("Scroll element into view", () ->
-                ((JavascriptExecutor) driver)
-                        .executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element));
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element));
     }
 
     public static void javascriptClick(WebDriver driver, WebElement element) {

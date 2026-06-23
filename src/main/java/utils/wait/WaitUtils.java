@@ -4,7 +4,10 @@ import config.TimeoutConfig;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,8 +22,6 @@ import java.util.function.Function;
 /**
  * Utility class for WebDriver wait operations.
  * All waits use configurable timeouts from TimeoutConfig.
- * No Thread.sleep() is used anywhere in this class.
- * <p>
  * This is the SINGLE SOURCE OF TRUTH for wait logic.
  * BaseActions delegates to this class for all wait operations.
  */
@@ -37,7 +38,7 @@ public final class WaitUtils {
     public static WebDriverWait getDefaultWait(WebDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, TimeoutConfig.getDefaultDuration());
         wait.pollingEvery(TimeoutConfig.getPollingDuration());
-        wait.ignoring(org.openqa.selenium.NoSuchElementException.class);
+        wait.ignoring(NoSuchElementException.class);
         return wait;
     }
 
@@ -51,7 +52,7 @@ public final class WaitUtils {
     public static WebDriverWait getWait(WebDriver driver, int timeoutSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
         wait.pollingEvery(TimeoutConfig.getPollingDuration());
-        wait.ignoring(org.openqa.selenium.NoSuchElementException.class);
+        wait.ignoring(NoSuchElementException.class);
         return wait;
     }
 
@@ -145,8 +146,7 @@ public final class WaitUtils {
     public static boolean waitForTextToBePresent(WebDriver driver, By locator, String expectedText) {
         log.debug("Waiting for text '{}' in element: {}", expectedText, locator);
         try {
-            return getDefaultWait(driver).until(
-                    ExpectedConditions.textToBePresentInElementLocated(locator, expectedText));
+            return getDefaultWait(driver).until(ExpectedConditions.textToBePresentInElementLocated(locator, expectedText));
         } catch (TimeoutException e) {
             log.warn("Text '{}' did not appear in element within timeout: {}", expectedText, locator);
             return false;
@@ -214,8 +214,7 @@ public final class WaitUtils {
     public static void waitForPageLoad(WebDriver driver) {
         log.debug("Waiting for page to load completely");
         getDefaultWait(driver).until(webDriver -> "complete".equals(
-                ((org.openqa.selenium.JavascriptExecutor) webDriver)
-                        .executeScript("return document.readyState")));
+                ((JavascriptExecutor) webDriver).executeScript("return document.readyState")));
     }
 
     /**
@@ -248,7 +247,7 @@ public final class WaitUtils {
      * @param driver the WebDriver instance
      * @return the alert
      */
-    public static org.openqa.selenium.Alert waitForAlert(WebDriver driver) {
+    public static Alert waitForAlert(WebDriver driver) {
         log.debug("Waiting for alert to be present");
         return getDefaultWait(driver).until(ExpectedConditions.alertIsPresent());
     }

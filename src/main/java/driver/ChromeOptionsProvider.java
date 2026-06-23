@@ -1,8 +1,6 @@
 package driver;
 
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.CapabilityType;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +33,6 @@ public final class ChromeOptionsProvider {
         options.setExperimentalOption("prefs", prefs);
         options.setExperimentalOption("excludeSwitches", Arrays.asList("enable-automation"));
 
-        options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, false);
-        options.setCapability(CapabilityType.PAGE_LOAD_STRATEGY, org.openqa.selenium.PageLoadStrategy.NORMAL);
         return options;
     }
 }

@@ -1,7 +1,7 @@
 environment: ZT004
 
 execution:
-    timeout: 20
+    timeout: 10
     pageLoadTimeout: 30
     pollingInterval: 250
     threadCount: 4

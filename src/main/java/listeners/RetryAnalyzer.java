@@ -25,7 +25,7 @@ public class RetryAnalyzer implements IRetryAnalyzer {
         if (retryCount < MAX_RETRY_COUNT) {
             retryCount++;
             log.warn("Test failed due to: ", iTestResult.getThrowable());
-            log.info("Retrying test: {}, attempt: {}", iTestResult.getName(), retryCount);
+            log.debug("Retrying test: {}, attempt: {}", iTestResult.getName(), retryCount);
             return true; // do retry
         }
         log.info("Max retry attempts reached for test {}", iTestResult.getName());

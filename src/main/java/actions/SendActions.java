@@ -1,4 +1,4 @@
-package pages.actions;
+package actions;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
@@ -11,7 +11,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor()
+@SuppressWarnings("null")
 public final class SendActions {
 
     public static void sendKeys(By locator, String text, WebDriver driver) {
@@ -55,7 +56,6 @@ public final class SendActions {
             new Select(element).selectByValue(value);
         });
     }
-
 
     public static void selectDropdownByIndex(WebDriver driver, By locator, int index) {
         log.debug("Selecting index '{}' from dropdown: {}", index, locator);

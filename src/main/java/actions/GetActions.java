@@ -1,4 +1,4 @@
-package pages.actions;
+package actions;
 
 import io.qameta.allure.Allure;
 import lombok.AccessLevel;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor()
 @SuppressWarnings("null")
 public final class GetActions {
 
@@ -51,7 +51,6 @@ public final class GetActions {
             return new Select(element).getFirstSelectedOption().getText();
         });
     }
-
 
     public static List<String> getDropdownOptions(WebDriver driver, By locator) {
         return Allure.step("Read all options from " + locator, () -> {

@@ -5,14 +5,15 @@ import driver.BaseDriver;
 import io.qameta.allure.Step;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pages.actions.BaseActions;
-import pages.actions.BrowserActions;
-import pages.actions.CheckActions;
-import pages.actions.ClickActions;
-import pages.actions.GetActions;
-import pages.actions.SendActions;
+import actions.BaseActions;
+import actions.BrowserActions;
+import actions.CheckActions;
+import actions.ClickActions;
+import actions.GetActions;
+import actions.SendActions;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public abstract class BasePage {
     protected final WebDriver driver;
 
     protected BasePage() {
-        this.driver = BaseDriver.getDriver();
+        this.driver = BaseDriver.getWebDriver();
     }
 
     protected BasePage(WebDriver driver) {
@@ -68,6 +69,11 @@ public abstract class BasePage {
         SendActions.sendKeys(element, text, driver);
     }
 
+    @Step("Send key {key} to element: {locator}")
+    public void sendKeys(By locator, Keys key) {
+        SendActions.sendKeys(locator, key, driver);
+    }
+
     @Step("Get text from element: {locator}")
     public String getText(By locator) {
         return GetActions.getText(driver, locator);
@@ -85,20 +91,12 @@ public abstract class BasePage {
 
     @Step("Check if element is displayed: {locator}")
     public boolean isDisplayed(By locator) {
-        try {
-            return CheckActions.isElementDisplayed(driver, locator);
-        } catch (Exception e) {
-            return false;
-        }
+        return CheckActions.isElementDisplayed(driver, locator);
     }
 
     @Step("Check if element is displayed")
     public boolean isDisplayed(WebElement element) {
-        try {
-            return CheckActions.isElementDisplayed(driver, element);
-        } catch (Exception e) {
-            return false;
-        }
+        return CheckActions.isElementDisplayed(driver, element);
     }
 
     @Step("Check if element is enabled: {locator}")
@@ -129,7 +127,7 @@ public abstract class BasePage {
     @Step("Scroll element into view: {locator}")
     public void scrollIntoView(By locator) {
         log.debug("Scrolling element into view: {}", locator);
-        WebElement element = driver.findElement(locator);
+        WebElement element = CheckActions.waitForVisible(driver, locator);
         scrollIntoView(element);
     }
 
@@ -230,10 +228,12 @@ public abstract class BasePage {
         return BrowserActions.getAlertText(driver);
     }
 
+    @Step("Find element: {locator}")
     public WebElement findElement(By locator) {
         return driver.findElement(locator);
     }
 
+    @Step("Find elements: {locator}")
     public List<WebElement> findElements(By locator) {
         return driver.findElements(locator);
     }
