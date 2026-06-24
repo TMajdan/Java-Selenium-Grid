@@ -27,7 +27,7 @@
 
         <snakeyaml.version>2.4</snakeyaml.version>
         <jackson-databind.version>2.18.3</jackson-databind.version>
-        <lombok.version>1.18.38</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
         <assertj.version>3.27.3</assertj.version>
         <slf4j.version>2.0.17</slf4j.version>
         <logback.version>1.5.18</logback.version>
@@ -36,6 +36,7 @@
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <orgjson.version>20231013</orgjson.version>
         <jsonpath.version>2.9.0</jsonpath.version>
+        <gson.version>2.12.1</gson.version>
 
         <!-- Plugins -->
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -175,6 +176,14 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonpath.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <!-- Gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 

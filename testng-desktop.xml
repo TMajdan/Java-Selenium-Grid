@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="suite" verbose="2" parallel="methods" thread-count="2" configfailurepolicy="continue" data-provider-thread-count="2">
+<suite name="desktop-suite" verbose="2" parallel="methods" thread-count="2" configfailurepolicy="continue" data-provider-thread-count="2">
 
     <listeners>
         <listener class-name="general.listeners.TestListener" />
@@ -8,9 +8,9 @@
         <listener class-name="general.listeners.RetryListener" />
     </listeners>
 
-    <test name="All Tests">
+    <test name="Desktop Tests">
         <packages>
-            <package name="tests.*" />
+            <package name="tests.desktop.*" />
         </packages>
     </test>
 </suite>

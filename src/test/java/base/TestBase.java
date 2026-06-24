@@ -1,8 +1,9 @@
 package base;
 
-import config.SeleniumProperties;
-import config.TestProperties;
-import driver.BaseDriver;
+import general.config.SeleniumProperties;
+import general.config.TestProperties;
+import destkop.utils.screenshot.ScreenshotUtils;
+import destkop.driver.BaseDriver;
 import io.qameta.allure.Allure;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -12,10 +13,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 
-import utils.screenshot.ScreenshotUtils;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import org.testng.SkipException;
 
 import java.util.Optional;
 
@@ -31,8 +31,9 @@ public abstract class TestBase {
     public void beforeSuite() {
         setDebugLevel();
         log.info("=======================================");
-        log.info("  Environment: {}  |  Grid: {}  |  Debug: {}  |  Headless: {}  |  Threads: {}",
+        log.info("  Environment: {}  |  Framework: {}  |  Grid: {}  |  Debug: {}  |  Headless: {}  |  Threads: {}",
                 TestProperties.getEnvironment(),
+                TestProperties.getFramework(),
                 SeleniumProperties.isGridMode(),
                 SeleniumProperties.isDebugMode(),
                 SeleniumProperties.isHeadlessMode(),
@@ -51,11 +52,20 @@ public abstract class TestBase {
 
     @BeforeMethod(alwaysRun = true)
     public void setUp() {
+        String framework = TestProperties.getFramework();
+        if (!"selenium".equals(framework)) {
+            throw new SkipException("Skipped — framework is '" + framework + "', not 'selenium'");
+        }
         BaseDriver.getWebDriver();
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown(ITestResult result) {
+        if (result.getStatus() == ITestResult.SKIP) {
+            log.info("  [SKIP] {} - {}", result.getName(), result.getThrowable() != null ? result.getThrowable().getMessage() : "");
+            return;
+        }
+
         Optional<WebDriver> optDriver = BaseDriver.getExistingWebDriver();
         if (!result.isSuccess()) {
             if (optDriver.isPresent()) {

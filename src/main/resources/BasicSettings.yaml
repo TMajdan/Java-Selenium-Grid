@@ -1,13 +1,17 @@
 environment: ZT004
 
+# Available modes: selenium | api | mobile
+framework: selenium
+
+# ── Execution Settings ──
 execution:
-    timeout: 10
-    pageLoadTimeout: 30
-    pollingInterval: 250
+    timeout: 10            # seconds
+    pageLoadTimeout: 30    # seconds
+    pollingInterval: 250   # milliseconds
     threadCount: 4
 
 selenium:
-    grid: false
+    grid: false            # true = Remote (Grid), false = Local
     debug: false
     headless: false
     maximizeWindow: true
