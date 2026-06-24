@@ -8,8 +8,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.HttpCommandExecutor;
+import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import java.net.MalformedURLException;
+import java.time.Duration;
 import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
@@ -62,7 +65,7 @@ public final class BaseDriver {
     }
 
     private static WebDriver createLocalDriver() {
-        ChromeOptions options = ChromeOptionsProvider.buildChromeOptions();
+        ChromeOptions options = ChromeOptionsProvider.setChromeOptions();
         WebDriver driver = new ChromeDriver(options);
         log.debug("Local ChromeDriver created");
         return wrapAndConfigure(driver);
@@ -70,12 +73,17 @@ public final class BaseDriver {
 
     private static WebDriver createRemoteDriver() {
         log.debug("Creating RemoteWebDriver");
-        ChromeOptions options = ChromeOptionsProvider.buildChromeOptions();
+        ChromeOptions options = ChromeOptionsProvider.setChromeOptionsRemote();
         URL remoteUrl = parseRemoteUrl();
 
         WebDriver driver;
         try {
-            driver = new RemoteWebDriver(remoteUrl, options);
+            ClientConfig clientConfig = ClientConfig.defaultConfig()
+                    .baseUrl(remoteUrl)
+                    .readTimeout(Duration.ofMinutes(3));
+            HttpCommandExecutor executor = new HttpCommandExecutor(clientConfig);
+
+            driver = new RemoteWebDriver(executor, options);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create RemoteWebDriver at: " + remoteUrl, e);
         }
