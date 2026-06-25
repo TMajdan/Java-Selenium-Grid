@@ -5,16 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.FilterableResponseSpecification;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.StringReader;
 import java.net.URI;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,9 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
-/**
- * Use ony with classes which are based on dependency injection (POC approach)
- */
 @Slf4j
 public class CustomRequestResponseLogger implements Filter {
 
@@ -68,7 +62,7 @@ public class CustomRequestResponseLogger implements Filter {
 
     private void logResponse(Response response) {
         String ct = response.getContentType().toLowerCase();
-        String responseBody = Optional.ofNullable(response.getBody()).map(ResponseBody::asString).orElse("");
+        String responseBody = Optional.ofNullable(response.getBody()).map(body -> body.asString()).orElse("");
         String[] responseLines = responseBody.split("\n");
 
         System.out.println("================== RESPONSE ==================");
@@ -84,13 +78,9 @@ public class CustomRequestResponseLogger implements Filter {
     private String formatJson(String json) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-        // Use a lenient JsonReader to handle potentially malformed JSON
-        JsonReader reader = new JsonReader(new StringReader(json));
-        reader.setLenient(true);
-
         JsonElement jsonElement;
         try {
-            jsonElement = JsonParser.parseReader(reader);
+            jsonElement = JsonParser.parseString(json);
         } catch (JsonSyntaxException e) {
             log.error("Malformed JSON: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to parse JSON", e);

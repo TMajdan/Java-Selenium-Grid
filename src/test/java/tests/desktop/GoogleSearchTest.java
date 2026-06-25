@@ -1,12 +1,6 @@
 package tests.desktop;
 
 import base.TestBase;
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Severity;
-import io.qameta.allure.SeverityLevel;
-import io.qameta.allure.Story;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import destkop.pages.google.GoogleHomePage;

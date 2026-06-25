@@ -5,17 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
 import general.common.Credentials;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.FilterableResponseSpecification;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
@@ -76,7 +73,7 @@ public class CustomLoggingFilter implements Filter {
         if (parameters == null || parameters.length == 0) {
             return testName;
         }
-        return testName + "[" + String.join(", ", Arrays.stream(parameters).map(Object::toString).toArray(String[]::new)) + "]";
+        return testName + "[" + String.join(", ", Arrays.stream(parameters).map(p -> p.toString()).toArray(String[]::new)) + "]";
     }
 
     private void logTestInfo(String methodName, String description) {
@@ -115,7 +112,7 @@ public class CustomLoggingFilter implements Filter {
 
     private void logResponse(Response response) {
         String ct = response.getContentType().toLowerCase();
-        String responseBody = Optional.ofNullable(response.getBody()).map(ResponseBody::asString).orElse("");
+        String responseBody = Optional.ofNullable(response.getBody()).map(body -> body.asString()).orElse("");
         String[] responseLines = responseBody.split("\n");
 
         log("================== RESPONSE ==================");
@@ -135,13 +132,10 @@ public class CustomLoggingFilter implements Filter {
     private String formatJson(String json) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-        // Use a lenient JsonReader to handle potentially malformed JSON
-        JsonReader reader = new JsonReader(new StringReader(json));
-        reader.setLenient(true);
-
+        // Parse JSON directly using parseString (handles lenient parsing internally)
         JsonElement jsonElement;
         try {
-            jsonElement = JsonParser.parseReader(reader);
+            jsonElement = JsonParser.parseString(json);
         } catch (JsonSyntaxException e) {
             log.error("Malformed JSON: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to parse JSON", e);

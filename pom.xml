@@ -37,6 +37,7 @@
         <orgjson.version>20231013</orgjson.version>
         <jsonpath.version>2.9.0</jsonpath.version>
         <gson.version>2.12.1</gson.version>
+        <javafaker.version>1.0.2</javafaker.version>
 
         <!-- Plugins -->
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -184,6 +185,14 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
+        <!-- JavaFaker -->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>${javafaker.version}</version>
         </dependency>
     </dependencies>
 

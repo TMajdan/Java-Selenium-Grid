@@ -1,11 +1,12 @@
-package java.api.requestmodel.accounts;
+package api.requestmodel.accounts;
 
+import api.requestmodel.RequestModel;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 
 public class DictionaryClient {
 
-    private final RequestModelPOC requestModel = new RequestModelPOC();
+    private final RequestModel requestModel = new RequestModel();
 
     public ValidatableResponse getSurveyDictionaries(RequestSpecification rs, String appId) {
         return requestModel.getRequest(rs, "/application/", appId + "/dictionaries/survey");

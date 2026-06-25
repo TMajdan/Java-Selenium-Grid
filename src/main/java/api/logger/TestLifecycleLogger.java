@@ -12,9 +12,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * Use ony with classes which are based on dependency injection
- */
 @Slf4j
 public class TestLifecycleLogger implements ITestListener, IClassListener {
 
@@ -46,6 +43,6 @@ public class TestLifecycleLogger implements ITestListener, IClassListener {
             filteredParameters = Arrays.stream(parameters).filter(Objects::nonNull).toArray();
         }
 
-        return testName + "[" + Arrays.stream(filteredParameters).map(Object::toString).collect(Collectors.joining(", ")) + "]";
+        return testName + "[" + Arrays.stream(filteredParameters).map(p -> p.toString()).collect(Collectors.joining(", ")) + "]";
     }
 }
